@@ -1,0 +1,94 @@
+
+
+entity-relationship-diagram
+
+users [icon: user, color: yellow]{
+  id string pk
+  full_name string
+  email string
+  phone string
+  shipping_address string
+  password_hash string
+  google_id string
+  role string 
+  created_at timestamp
+  updated_at timestamp
+}
+
+sellers [icon: briefcase, color: orange]{
+  id string pk
+  user_id string 
+  store_name string
+  profile_description string
+  created_at timestamp
+  updated_at timestamp
+}
+
+categories [icon: tag, color: green]{
+  id string pk
+  name string
+  description string
+  created_at timestamp
+  updated_at timestamp
+}
+
+products [icon: package, color: blue]{
+  id string pk
+  title string
+  description string
+  price decimal
+  category_id string 
+  seller_id string 
+  stock_quantity int
+  status string 
+  created_at timestamp
+  updated_at timestamp
+}
+
+product_images [icon: image, color: purple]{
+  id string pk
+  product_id string 
+  image_url string
+  alt_text string
+  created_at timestamp
+}
+
+carts [icon: shopping-cart, color: red]{
+  id string pk
+  user_id string 
+  created_at timestamp
+  updated_at timestamp
+}
+
+cart_items [icon: shopping-bag, color: gray]{
+  id string pk
+  cart_id string 
+  product_id string 
+  quantity int
+  price_at_add decimal
+  added_at timestamp
+}
+
+reviews [icon: star, color: yellow]{
+  id string pk
+  product_id string 
+  user_id string 
+  rating int
+  comment string
+  created_at timestamp
+}
+
+
+sellers.user_id > users.id
+products.category_id > categories.id
+products.seller_id > sellers.id
+product_images.product_id > products.id
+carts.user_id > users.id
+cart_items.cart_id > carts.id
+cart_items.product_id > products.id
+reviews.product_id > products.id
+reviews.user_id > users.id
+
+
+
+
