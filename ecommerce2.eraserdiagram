@@ -1,0 +1,57 @@
+entity-relationship-diagram
+
+user [icon:user,color:green]{
+    _id string
+    name string
+    email string
+    password string
+    role string
+    profileImage string
+    createdAt timestamp
+    otp string
+    otpExpire Date
+    isOtpVerified boolean
+    isEmailVerified boolean
+    otpLastSentAt Date
+}
+
+category [icon: tag, color: orange] {
+  _id string
+  name string
+  description string
+}
+
+product [icon: shopping-bag, color: yellow] {
+  _id string
+  title string
+  description string
+  price number
+  category ObjectId
+  images array
+  sellerName string
+  stockQuantity number
+  status string
+}
+
+cart [icon: shopping-cart, color: pink] {
+  _id string
+  user ObjectId
+  items array
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+review [icon: star, color: blue] {
+  _id string
+  user ObjectId
+  product ObjectId
+  rating number
+  comment string
+  createdAt timestamp
+  updatedAt timestamp
+}  
+
+product.category > category._id
+cart.user > user._id
+review.user > user._id
+review.product > product._id

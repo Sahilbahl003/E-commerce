@@ -1,0 +1,75 @@
+export const validateField = (name, value, formData = {}) => {
+  let message = "";
+
+  if (name === "name") {
+    const nameRegex = /^[A-Za-z]+( [A-Za-z]+)*$/;
+    const trimmed = value.trim();
+    if (!trimmed) message = "Name is required";
+    else if (trimmed.length < 3) message = "Name must be at least 3 characters";
+    else if (trimmed.length > 50) message = "Name too long";
+    else if (!nameRegex.test(trimmed)) message = "Name must be alphabet";
+  }
+
+  if (name === "email") {
+    const val = value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,3}$/;
+    if (!val) message = "Email is required";
+    else if (val.length > 50) message = "Email too long";
+    else if (!emailRegex.test(val)) message = "Invalid email address";
+  }
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,20}$/;
+
+  if (name === "password") {
+    if (!value) message = "Password is required";
+    else if (value.length < 8) message = "Password must be at least 8 characters";
+    else if (value.length > 20) message = "Password too long";
+    else if (!passwordRegex.test(value)) message = "Must include uppercase, lowercase, number, special character";
+  }
+
+  if (name === "confirmPassword") {
+    if (!value) message = "Confirm Password is required";
+    else if (value.length < 8) message = "Password must be at least 8 characters";
+    else if (value.length > 20) message = "Password too long";
+    else if (!passwordRegex.test(value)) message = "Must include uppercase, lowercase, number, special character";
+    else if (value !== formData.password) message = "Passwords do not match";
+  }
+
+  if (name === "currentPassword" || name === "newPassword") {
+    if (!value) message = "Password is required";
+    else if (value.length < 8) message = "Password must be at least 8 characters";
+    else if (value.length > 20) message = "Password too long";
+    else if (!passwordRegex.test(value)) message = "Must include uppercase, lowercase, number, special character";
+  }
+
+  if (name === "confirmPassword1") {
+    if (!value) message = "Confirm Password is required";
+    else if (value.length < 8) message = "Password must be at least 8 characters";
+    else if (value.length > 20) message = "Password too long";
+    else if (!passwordRegex.test(value)) message = "Must include uppercase, lowercase, number, special character";
+    else if (value !== formData.newPassword) message = "Passwords do not match";
+  }
+
+  if (name === "image") {
+    const imageRegex = /\.(jpe?g|png|gif|bmp|webp)$/i;
+    if (!value) message = "Image is required";
+    else if (!imageRegex.test(value)) message = "Image type should be .png, .jpg, .jpeg";
+  }
+
+  return message;
+};
+
+if (name === "otp") {
+  if (!value) message = "OTP is required";
+  else if (!/^\d{6}$/.test(value)) message = "OTP must be 6 digits";
+}
+
+export const validateForm = (formData) => {
+  const errors = {};
+  Object.keys(formData).forEach((key) => {
+    const error = validateField(key, formData[key], formData);
+    if (error) errors[key] = error;
+  });
+  return errors;
+};
+
