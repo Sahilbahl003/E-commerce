@@ -1,0 +1,5 @@
+/server/node_modules
+/server/.env
+
+/Frontend/E-commerce/.env
+/Frontend/E-commerce/node_modules
