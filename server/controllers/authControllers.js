@@ -194,7 +194,7 @@ exports.sendOtp = async (req, res) => {
     user.isOtpVerified = false;
 
     await user.save();
-    await sendMail(email, otp, "Reset Your Password - Blog App");
+    await sendMail(email, otp, "Reset Your Password - Ecomzy");
 
     res.json({ msg: "OTP sent successfully" });
   } catch {

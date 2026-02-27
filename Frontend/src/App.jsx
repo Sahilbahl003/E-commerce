@@ -8,7 +8,10 @@ import Products from './pages/Products'
 import About from './pages/About'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import ForgetPassword from './pages/ForgetPassword'
+import Men from './pages/Men'
+import { Women } from './pages/Women'
+import Children from './pages/Children'
+import ForgotPassword from './pages/ForgotPassword'
 
 
 function App() {
@@ -24,11 +27,16 @@ function App() {
         <Route path='/register' element={<Register/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/products' element={<Products/>}/>
+        <Route path='/men' element={<Men/>}/>
+        <Route path='/women' element={<Women/>}/>
+        <Route path='/children' element={<Children/>}/>
         <Route path='/about' element={<About/>}/>
-        <Route path='/forgot-password' element={<ForgetPassword/>}/>
+        <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path="*" element={<Navigate to="/"/>} />
       </Routes>
-      <Footer/>
+      <div className='mt-90'>
+        <Footer/>
+      </div>
     </div>
   )
 }
