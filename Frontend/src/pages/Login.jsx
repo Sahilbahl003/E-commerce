@@ -75,10 +75,10 @@ const Login = () => {
       <div className="w-[800px] h-[480px] mb-25 flex shadow-xl rounded-xl">
         <div className="w-1/2 relative">
           <img src="image.png" className="h-[480px]" />
-          <div className="text-purple-500 text-3xl absolute top-[20%] left-[5%]">
+          <div className="text-blue-500 text-3xl absolute top-[20%] left-[5%]">
             Welcome Back
           </div>
-          <div className="text-purple-500 text-xl absolute top-[27%] left-[27%]">
+          <div className="text-blue-500 text-xl absolute top-[27%] left-[27%]">
             Shop Now !!
           </div>
         </div>
@@ -87,7 +87,7 @@ const Login = () => {
           onSubmit={submitHandler}
           className="bg-white px-10 py-8 w-[420px] flex flex-col gap-4"
         >
-          <h2 className="text-2xl font-bold text-purple-900 text-center mb-2">
+          <h2 className="text-2xl font-bold text-blue-500 text-center mb-2">
             Login
           </h2>
 
@@ -100,7 +100,7 @@ const Login = () => {
               value={formData.email}
               onChange={changeHandler}
               onBlur={blurHandler}
-              className="shadow-sm shadow-zinc-300 px-4 py-2 rounded-md w-full outline-none focus:ring-2 focus:ring-purple-400"
+              className="shadow-sm shadow-zinc-300 px-4 py-2 rounded-md w-full outline-none focus:ring-2 focus:ring-blue-400"
             />
             {errors.email && (
               <p className="text-red-600 text-xs">{errors.email}</p>
@@ -118,7 +118,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={changeHandler}
                 onBlur={blurHandler}
-                className="shadow-sm shadow-zinc-300 px-4 py-2 pr-10 rounded-md w-full outline-none focus:ring-2 focus:ring-purple-400"
+                className="shadow-sm shadow-zinc-300 px-4 py-2 pr-10 rounded-md w-full outline-none focus:ring-2 focus:ring-blue-400"
               />
 
               <div
@@ -139,7 +139,7 @@ const Login = () => {
           </div>
 
           <p
-            className="text-purple-900 cursor-pointer pl-54 text-sm"
+            className="text-blue-500 cursor-pointer pl-54 text-sm"
             onClick={() => navigate("/forgot-password")}
           >
             Forgot Password?
@@ -147,7 +147,7 @@ const Login = () => {
 
           <button
             disabled={loading}
-            className="bg-purple-500 hover:bg-purple-600 text-white rounded-md h-10 mt-2 transition flex justify-center items-center cursor-pointer disabled:opacity-70"
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-md h-10 mt-2 transition flex justify-center items-center cursor-pointer disabled:opacity-70"
           >
             {loading ? (
               <div className="flex gap-1 items-center justify-center">
@@ -163,7 +163,7 @@ const Login = () => {
             New to Ecomzy?
             <span
               onClick={() => navigate("/register")}
-              className="text-purple-900 cursor-pointer ml-1"
+              className="text-blue-500 cursor-pointer ml-1"
             >
               Create an account
             </span>

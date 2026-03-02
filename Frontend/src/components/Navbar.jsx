@@ -8,7 +8,7 @@ import { PiShoppingCartSimple } from "react-icons/pi";
 const Navbar = () => {
     const navigate = useNavigate();
   return (
-    <div className='flex py-8 justify-between bg-white text-zinc-700 font-semibold w-[1300px]'>
+    <div className='fixed top-0 flex py-8 justify-between bg-white text-zinc-700 font-semibold w-[1300px]'>
         <div onClick={()=>navigate("/")} className='text-blue-400 text-2xl font-bold flex gap-3 cursor-pointer'><span className='text-zinc-500 text-4xl font-bold'><BsCart4 /></span>E-comzy</div>
         <div className='flex justify-center items-center gap-4'>
             <div className='cursor-pointer' onClick={()=>navigate("/men")}>Men</div>

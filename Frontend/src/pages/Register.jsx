@@ -124,19 +124,19 @@ const Register = () => {
   return (
     <div className="w-full h-screen flex justify-center items-center bg-gray-50">
       <form onSubmit={submitHandler} className="bg-white shadow-xl px-10 py-8 w-[420px] rounded-xl flex flex-col gap-4 mb-30">
-        <h2 className="text-2xl font-bold text-purple-900 text-center mb-2">Register</h2>
+        <h2 className="text-2xl font-bold text-blue-500 text-center mb-2">Register</h2>
 
         {step === 1 && (
           <>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">Name</label>
-              <input name="name" value={formData.name} onChange={changeHandler} onBlur={blurHandler} placeholder="Enter your name" className="shadow-sm shadow-zinc-300 px-4 py-2 rounded-md outline-none focus:ring-2 focus:ring-purple-400" maxLength={30} />
+              <input name="name" value={formData.name} onChange={changeHandler} onBlur={blurHandler} placeholder="Enter your name" className="shadow-sm shadow-zinc-300 px-4 py-2 rounded-md outline-none focus:ring-2 focus:ring-blue-400" maxLength={30} />
               {errors.name && <p className="text-red-600 text-xs">{errors.name}</p>}
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">Email</label>
-              <input name="email" value={formData.email} onChange={changeHandler} onBlur={blurHandler} placeholder="Enter your email" className="shadow-sm shadow-zinc-300 px-4 py-2 rounded-md outline-none focus:ring-2 focus:ring-purple-400" maxLength={50} />
+              <input name="email" value={formData.email} onChange={changeHandler} onBlur={blurHandler} placeholder="Enter your email" className="shadow-sm shadow-zinc-300 px-4 py-2 rounded-md outline-none focus:ring-2 focus:ring-blue-400" maxLength={50} />
               {errors.email && <p className="text-red-600 text-xs">{errors.email}</p>}
             </div>
 
@@ -153,7 +153,7 @@ const Register = () => {
               </label>
 
               <div className="relative">
-                <input name="password" type={showPassword ? "text" : "password"} placeholder="Enter password" value={formData.password} onChange={changeHandler} onBlur={blurHandler} className="shadow-sm shadow-zinc-300 px-4 py-2 pr-10 rounded-md w-full outline-none focus:ring-2 focus:ring-purple-400" maxLength={20} />
+                <input name="password" type={showPassword ? "text" : "password"} placeholder="Enter password" value={formData.password} onChange={changeHandler} onBlur={blurHandler} className="shadow-sm shadow-zinc-300 px-4 py-2 pr-10 rounded-md w-full outline-none focus:ring-2 focus:ring-blue-400" maxLength={20} />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <AiOutlineEyeInvisible className="text-gray-500 text-lg" /> : <AiOutlineEye className="text-gray-500 text-lg" />}
                 </div>
@@ -164,7 +164,7 @@ const Register = () => {
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">Confirm Password</label>
               <div className="relative">
-                <input name="confirmPassword" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm password" value={formData.confirmPassword} onChange={changeHandler} onBlur={blurHandler} className="shadow-sm shadow-zinc-300 px-4 py-2 pr-10 rounded-md w-full outline-none focus:ring-2 focus:ring-purple-400" maxLength={20} />
+                <input name="confirmPassword" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm password" value={formData.confirmPassword} onChange={changeHandler} onBlur={blurHandler} className="shadow-sm shadow-zinc-300 px-4 py-2 pr-10 rounded-md w-full outline-none focus:ring-2 focus:ring-blue-400" maxLength={20} />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                   {showConfirmPassword ? <AiOutlineEyeInvisible className="text-gray-500 text-lg" /> : <AiOutlineEye className="text-gray-500 text-lg" />}
                 </div>
@@ -174,7 +174,7 @@ const Register = () => {
 
             {formError && <p className="text-red-600 text-sm text-center">{formError}</p>}
 
-            <button disabled={loading} className="bg-purple-500 hover:bg-purple-600 text-white rounded-md h-10 mt-2 transition cursor-pointer flex justify-center items-center cursor-pointer">
+            <button disabled={loading} className="bg-blue-500 hover:bg-blue-600 text-white rounded-md h-10 mt-2 transition cursor-pointer flex justify-center items-center cursor-pointer">
               {loading ? (
                 <div className="flex gap-1 items-center justify-center">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -205,7 +205,7 @@ const Register = () => {
               type="button"
               disabled={loadingVerify}
               onClick={verifyOtpHandler}
-              className="bg-purple-500 hover:bg-purple-600 text-white rounded-md h-10 mt-2 transition flex justify-center items-center cursor-pointer"
+              className="bg-blue-500 hover:bg-blue-600 text-white rounded-md h-10 mt-2 transition flex justify-center items-center cursor-pointer"
             >
               {loadingVerify ? (
                 <div className="flex gap-1 items-center justify-center">
@@ -218,7 +218,7 @@ const Register = () => {
             </button>
 
             {timer === 0 && (
-              <button type="button" onClick={submitHandler} className="text-purple-900 underline text-sm cursor-pointer">
+              <button type="button" onClick={submitHandler} className="text-blue-900 underline text-sm cursor-pointer">
                 Resend OTP
               </button>
             )}
@@ -227,7 +227,7 @@ const Register = () => {
 
         <p className="text-sm text-center">
           Existing User?
-          <span className="text-purple-900 cursor-pointer ml-1" onClick={() => navigate("/login")}>
+          <span className="text-blue-500 cursor-pointer ml-1" onClick={() => navigate("/login")}>
             Login
           </span>
         </p>
