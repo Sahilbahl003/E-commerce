@@ -10,7 +10,7 @@ import { BsCart4 } from "react-icons/bs";
 
 const Footer = () => {
   return (
-<div className='w-full h-[350px]  pt-4 flex flex-col '>
+<div className='w-full h-[350px]  pt-4 flex flex-col'>
     <div className='top flex bg-sky-950 py-10'>
         <div className='w-1/2 flex px-40 gap-20'>
 

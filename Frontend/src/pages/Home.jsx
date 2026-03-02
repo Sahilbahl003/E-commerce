@@ -5,6 +5,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Hero from '../components/Hero';
+import Categories from '../components/Categories';
 
 
 const Home = () => {
@@ -18,6 +19,7 @@ const Home = () => {
       </Swiper> */}
       <div className='w-[1300px] mt-5'>
         <Hero/>
+        <Categories/>
       </div>
       
     </div>

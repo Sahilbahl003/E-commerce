@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const AuthRoutes = require("./routes/authRoutes");
 const UserRoutes = require("./routes/userRoutes");
+const ProductRoutes = require("./routes/productRoutes")
 const dbConnect = require("./config/dbConnect");
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 
 app.use("/api/v1",AuthRoutes);
 app.use("/api/v1",UserRoutes);
+app.use("/api/v1",ProductRoutes);
 
 app.get("/",(req,res)=>{
     res.send(`<h1>Hi is this Ecommerce app</h1>`);

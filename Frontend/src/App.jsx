@@ -12,16 +12,17 @@ import Men from './pages/Men'
 import { Women } from './pages/Women'
 import Children from './pages/Children'
 import ForgotPassword from './pages/ForgotPassword'
+import ScrollToTop from './components/ScrollToTop'
 
 
 function App() {
   return (
     <div>
-    <div className='flex flex-col w-full items-center justify-center'>
+    <div className='flex flex-col w-full items-center justify-center mb-20'>
       <Navbar/>
       <hr className='w-[1300px]'/>
     </div>
-    
+    <ScrollToTop>
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path='/register' element={<Register/>}/>
@@ -34,7 +35,8 @@ function App() {
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path="*" element={<Navigate to="/"/>} />
       </Routes>
-      <div className='mt-90'>
+    </ScrollToTop>
+      <div className='mt-300'>
         <Footer/>
       </div>
     </div>
