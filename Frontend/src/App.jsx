@@ -13,6 +13,8 @@ import { Women } from './pages/Women'
 import Children from './pages/Children'
 import ForgotPassword from './pages/ForgotPassword'
 import ScrollToTop from './components/ScrollToTop'
+import Profile from './pages/Profile'
+import ChangePassword from './components/ChangePassword'
 
 
 function App() {
@@ -32,11 +34,13 @@ function App() {
         <Route path='/women' element={<Women/>}/>
         <Route path='/children' element={<Children/>}/>
         <Route path='/about' element={<About/>}/>
+        <Route path='/profile' element={<Profile/>}/>
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
+        <Route path='/change-password' element={<ChangePassword/>}/>
         <Route path="*" element={<Navigate to="/"/>} />
       </Routes>
     </ScrollToTop>
-      <div className='mt-300'>
+      <div className='mt-430'>
         <Footer/>
       </div>
     </div>
