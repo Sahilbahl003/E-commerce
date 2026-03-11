@@ -1,111 +1,35 @@
 const express = require("express");
+
+const {isAdmin} = require("../middlewares/isAdmin");
+const {auth} = require("../middlewares/Auth");
+
+const {
+  getDashboardStats,
+  getAllUsers,
+  deleteUser,
+  getAllProductsAdmin,
+  deleteProductAdmin,
+  getAllOrders,
+  updateOrderStatus,
+  toggleUserStatus
+} = require("../controllers/adminControllers");
+
 const router = express.Router();
-const User = require("../models/User");
-const Product = require("../models/Product");
-const Order = require("../models/Order");
 
-const { auth } = require("../middlewares/Auth.js");
-const isAdmin = require("../middlewares/isAdmin");
+router.get("/dashboard", auth, isAdmin, getDashboardStats);
 
+router.get("/users", auth, isAdmin, getAllUsers);
 
-router.get("/stats", auth, isAdmin, async (req, res) => {
+router.put("/users/:id/toggle-status", auth, isAdmin, toggleUserStatus);
 
-  const totalUsers = await User.countDocuments();
-  const totalProducts = await Product.countDocuments();
-  const totalOrders = await Order.countDocuments();
+router.delete("/users/:id", auth, isAdmin, deleteUser);
 
-  res.json({
-    totalUsers,
-    totalProducts,
-    totalOrders
-  });
+router.get("/products", auth, isAdmin, getAllProductsAdmin);
 
-});
+router.delete("/products/:id", auth, isAdmin, deleteProductAdmin);
 
+router.get("/orders", auth, isAdmin, getAllOrders);
 
-router.get("/users", auth, isAdmin, async (req, res) => {
-
-  const users = await User.find();
-
-  res.json(users);
-
-});
-
-
-router.delete("/user/:id", auth, isAdmin, async (req, res) => {
-
-  await User.findByIdAndDelete(req.params.id);
-
-  res.json({
-    message: "User deleted"
-  });
-
-});
-
-
-router.get("/products", auth, isAdmin, async (req, res) => {
-
-  const products = await Product.find();
-
-  res.json(products);
-
-});
-
-
-router.post("/product", auth, isAdmin, async (req, res) => {
-
-  const product = await Product.create(req.body);
-
-  res.json(product);
-
-});
-
-
-router.put("/product/:id", auth, isAdmin, async (req, res) => {
-
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-
-  res.json(product);
-
-});
-
-
-router.delete("/product/:id", auth, isAdmin, async (req, res) => {
-
-  await Product.findByIdAndDelete(req.params.id);
-
-  res.json({
-    message: "Product deleted"
-  });
-
-});
-
-
-router.get("/orders", auth, isAdmin, async (req, res) => {
-
-  const orders = await Order.find()
-    .populate("user")
-    .populate("products.product");
-
-  res.json(orders);
-
-});
-
-
-router.put("/order/:id", auth, isAdmin, async (req, res) => {
-
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status: req.body.status },
-    { new: true }
-  );
-
-  res.json(order);
-
-});
+router.put("/orders/:id", auth, isAdmin, updateOrderStatus);
 
 module.exports = router;

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+const upload = require("../config/multer");
+const {auth} = require("../middlewares/Auth");
+
 const {
   createProduct,
   getAllProducts,
@@ -9,22 +12,38 @@ const {
   deleteProduct,
 } = require("../controllers/productControllers");
 
-const { auth } = require("../middlewares/auth");
-
 
 // Create Product
-router.post("/createProduct", auth, createProduct);
+router.post(
+  "/products",
+  auth,
+  upload.single("image"),
+  createProduct
+);
+
 
 // Get All Products
-router.get("/getAll", getAllProducts);
+router.get("/products", getAllProducts);
+
 
 // Get Product By Id
-router.get("/getAll/:id", getProductById);
+router.get("/products/:id", getProductById);
+
 
 // Update Product
-router.put("/getAll/:id", auth, updateProduct);
+router.put(
+  "/products/:id",
+  auth,
+  upload.single("image"),   // allows updating image
+  updateProduct
+);
+
 
 // Delete Product
-router.delete("/delete/:id", auth, deleteProduct);
+router.delete(
+  "/products/:id",
+  auth,
+  deleteProduct
+);
 
 module.exports = router;

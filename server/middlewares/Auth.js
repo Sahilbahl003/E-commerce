@@ -1,38 +1,27 @@
-const jwt= require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
-exports.auth=(req,res,next)=>{
-    try {
-        const token= req.headers.token;
-        if(!token)
-        {
-            return res.status(401).json({
-                message:"token is missing",
-                success:false,
+exports.auth = (req, res, next) => {
+  try {
 
-            })
-        }
-
-        try {
-            const payload = jwt.verify(token,process.env.JWT_SECRET);
-             req.user=payload;
-        } catch (error) {
-            return res.json({
-                message:"token invalid"
-            })
-            
-        }
-        next();
-    } catch (error) {
-        return res.status(401).json({
-            message:"Invalid or expired token"
-        })
-        
+    const token = req.headers.token;
+     console.log("TOKEN:", token);
+    if (!token) {
+      return res.status(401).json({
+        success:false,
+        message:"Token missing"
+      });
     }
-}
 
-// module.exports = (req, res, next) => {
-//   if (req.user.role !== "admin") {
-//     return res.status(403).json({ message: "Admin only access" });
-//   }
-//   next();
-// };
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = payload;
+
+    next();
+
+  } catch (error) {
+    return res.status(401).json({
+      success:false,
+      message:"Invalid token"
+    });
+  }
+};

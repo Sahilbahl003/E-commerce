@@ -1,16 +1,27 @@
 const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const sendMail = async (email, otp, subject) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+  //   const transporter = nodemailer.createTransport({
+  //     host: "smtp.gmail.com",
+  //     port: 465,
+  //     secure: true,
+  //     auth: {
+  //       user: process.env.EMAIL,
+  //       pass: process.env.EMAIL_PASS,
+  //     },
+  //   });
 
     await transporter.sendMail({
       from: `"Ecomzy" <${process.env.EMAIL}>`,
