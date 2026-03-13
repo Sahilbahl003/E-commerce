@@ -1,6 +1,7 @@
 const cloudinary = require("../config/cloudinary");
 const Category = require("../models/Category");
 const { throwError, throwNotFoundError } = require("../utils/errors");
+const { toggleUserStatus } = require("./adminServices");
 
 const uploadToCloudinary = (file) => {
   return new Promise((resolve, reject) => {
@@ -24,6 +25,11 @@ exports.createCategory = async (name, file) => {
 
   const result = await uploadToCloudinary(file);
 
+  // const existed = await Category.find({});
+  // if(existed){
+  //     toast.error("category existed");
+  // }
+
   const category = await Category.create({
     name,
     image: result.secure_url,
@@ -32,8 +38,21 @@ exports.createCategory = async (name, file) => {
   return category;
 };
 
-exports.getCategories = async () => {
-  return await Category.find().sort({ createdAt: -1 });
+exports.getCategories = async (page, limit) => {
+  const skip = (page - 1) * limit;
+  const totalCategories = await Category.countDocuments();
+      
+  const categories = await Category.find().sort({ createdAt: -1 })
+  .skip(skip)
+  .limit(limit);
+
+   const totalPages = Math.ceil(totalCategories / limit);
+
+
+  return {
+    categories,
+    totalPages
+  };
 };
 
 exports.getCategory = async (id) => {
@@ -78,3 +97,4 @@ exports.deleteCategory = async (id) => {
 
   return true;
 };
+

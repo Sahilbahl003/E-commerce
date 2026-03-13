@@ -20,12 +20,18 @@ exports.getDashboardStats = async (req, res) => {
 };
 
 exports.getAllUsers = async (req, res) => {  
-  try {    
-    const users = await adminService.getAllUsers();
+  try {  
+    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
 
-    res.status(200).json({      
-      success: true,      
-      users    
+    const data = await adminService.getAllUsers(page,limit);
+
+    res.status(200).json({
+      success: true,
+      users: data.users,
+      currentPage: page,
+      totalPages: data.totalPages
     });
 
   } catch (error) {    

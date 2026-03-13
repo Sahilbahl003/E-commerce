@@ -22,11 +22,17 @@ exports.createCategory = async (req, res) => {
 
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await categoryService.getCategories();
+         const page = parseInt(req.query.page) || 1;
+         const limit = parseInt(req.query.limit) || 5;
+      
+         console.log("req.query.page",parseInt(req.query.page));
+    const data = await categoryService.getCategories(page, limit);
 
     res.status(200).json({
       success: true,
-      categories,
+      categories:data.categories,
+      currentPage: page,
+      totalPages: data.totalPages
     });
 
   } catch (error) {
@@ -90,4 +96,20 @@ exports.deleteCategory = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+exports.getCategoryById = async (req, res) => {
+  try {
+    const category = await categoryService.getCategory(req.params.id);    
+    res.json({
+      success: true,
+      category,
+    });
+
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  } 
 };

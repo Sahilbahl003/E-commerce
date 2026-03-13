@@ -20,8 +20,21 @@ exports.getDashboardStats = async () => {
   };
 };
 
-exports.getAllUsers = async () => {
-  return await User.find({ role: "user" }).select("-password");
+exports.getAllUsers = async (page, limit) => {
+
+  const skip = (page - 1) * limit;
+  
+  const totalUsers = await User.countDocuments();
+
+  const users = await User.find({ role: "user" }).select("-password").skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalUsers / limit);
+
+  return {
+    users,
+    totalPages
+  }
 };
 
 exports.deleteUser = async (id) => {
