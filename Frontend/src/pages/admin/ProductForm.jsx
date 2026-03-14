@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
 
 import { getCategoriesService } from "../../services/categories.service";
 
@@ -143,9 +144,9 @@ const ProductForm = () => {
 
 <button
 onClick={() => navigate("/admin/products")}
-className="text-xl"
+className="text-3xl cursor-pointer"
 >
-✕
+<IoIosArrowBack />
 </button>
 
 <h1 className="text-2xl font-semibold">
@@ -169,6 +170,7 @@ type="text"
 value={title}
 onChange={(e)=>setTitle(e.target.value)}
 className="border rounded p-2 w-full"
+maxLength={50}
 />
 
 </div>
@@ -185,6 +187,7 @@ Product Description
 value={description}
 onChange={(e)=>setDescription(e.target.value)}
 className="border rounded p-2 w-full h-32"
+maxLength={300}
 />
 
 </div>
@@ -224,11 +227,14 @@ className="border rounded p-2 w-full"
 <label className="block mb-1">Price</label>
 
 <input
-type="number"
-value={price}
-onChange={(e)=>setPrice(e.target.value)}
-className="border rounded p-2 w-full"
+  type="text"
+  inputMode="numeric"
+  value={price}
+  onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ''))}
+  className="border rounded p-2 w-full"
+  maxLength={10}
 />
+
 
 </div>
 
@@ -237,10 +243,11 @@ className="border rounded p-2 w-full"
 <label className="block mb-1">Stock</label>
 
 <input
-type="number"
+type="text"
 value={stock}
-onChange={(e)=>setStock(e.target.value)}
+onChange={(e)=>setStock(e.target.value.replace(/[^0-9]/g, ''))}
 className="border rounded p-2 w-full"
+maxLength={10}
 />
 
 </div>

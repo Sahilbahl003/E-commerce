@@ -10,6 +10,7 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
+  searchProducts,
 } = require("../controllers/productControllers");
 
 
@@ -21,12 +22,10 @@ router.post(
   createProduct
 );
 
+//router.get("/products/search", searchProducts);
 
-// Get All Products
 router.get("/products", getAllProducts);
 
-
-// Get Product By Id
 router.get("/products/:id", getProductById);
 
 
@@ -45,5 +44,7 @@ router.delete(
   auth,
   deleteProduct
 );
+
+router.get("/search", searchProducts);
 
 module.exports = router;

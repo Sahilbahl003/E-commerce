@@ -83,7 +83,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center pt-28 pb-10">
+    <div className="w-full flex justify-center items-center pt-10 pb-10">
       <div className="w-[800px] flex shadow-xl rounded-xl overflow-hidden">
 
         {/* Left Image */}

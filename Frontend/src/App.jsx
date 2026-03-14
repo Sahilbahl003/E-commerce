@@ -21,6 +21,12 @@ import Categories from "./pages/admin/Categories";
 import CategoryForm from "./pages/admin/CategoryForm";
 import ProductForm from "./pages/admin/ProductForm";
 import Product from "./components/product/Product";
+import Category from "./components/category/Category";
+import ProductDetail from "./components/product/ProductDetail";
+import Cart from "./pages/user/Cart";
+import Pagination from "./components/pagination/Pagination";
+import CategorySidebar from "./components/layout/CategorySidebar";
+import Wishlist from "./pages/user/Wishlist";
 
 function App() {
 return ( <Routes className="overflow-x-hidden">
@@ -34,7 +40,13 @@ return ( <Routes className="overflow-x-hidden">
     <Route path="/profile" element={<Profile />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/change-password" element={<ChangePassword />} />
-    <Route path="/product" element={<Product />} />
+    <Route path="/product" element={<Product/>} />
+    <Route path="/product/:id" element={<ProductDetail />} />
+    <Route path="/category/:id" element={<Category />} />
+    <Route path="/cart" element={<Cart />} />
+    <Route path="/pagi" element={<Pagination/>}/>
+    <Route path="/catSidebar" element={<CategorySidebar/>}/>
+    <Route path="/wishlist" element={<Wishlist/>}/>
   </Route>
 
   {/* ADMIN LAYOUT */}
