@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RxCross1 } from "react-icons/rx";
@@ -11,10 +11,13 @@ import {
 } from "../../services/profile.service";
 
 import { getToken, getUser } from "../../utils/auth";
+import { UserContext } from "../../context/UserContext"; // ⭐ added
 
 const Profile = () => {
 
   const navigate = useNavigate();
+
+  const { setUser: updateContextUser } = useContext(UserContext); // ⭐ added
 
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
@@ -55,8 +58,6 @@ const Profile = () => {
         return;
       }
 
-      console.log(data);
-
       setUser(data.user || null);
       setName(data.user?.name || "");
 
@@ -76,7 +77,6 @@ const Profile = () => {
 
     if (image) {
       form.append("image", image);
-
     }
 
     try {
@@ -92,6 +92,9 @@ const Profile = () => {
       toast.success("Profile updated");
 
       setUser(data.user || null);
+      updateContextUser(data.user); // ⭐ update Navbar instantly
+      localStorage.setItem("user", JSON.stringify(data.user)); // ⭐ keep persistence
+
       setImage(null);
 
     } catch {
@@ -124,6 +127,9 @@ const Profile = () => {
       }
 
       setUser(data.user || null);
+      updateContextUser(data.user); // ⭐ update Navbar
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       setImage(null);
 
       toast.success("Profile image removed");
@@ -137,45 +143,43 @@ const Profile = () => {
 
   const handleImageChange = (file) => {
 
-  if (!file) return;
+    if (!file) return;
 
-  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
 
+    if (!allowedTypes.includes(file.type)) {
 
-  if (!allowedTypes.includes(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        image: "Only JPG, JPEG and PNG formats allowed"
+      }));
+
+      setImage(null);
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+
+      setErrors((prev) => ({
+        ...prev,
+        image: "Image must be less than 2MB"
+      }));
+
+      setImage(null);
+      return;
+    }
 
     setErrors((prev) => ({
       ...prev,
-      image: "Only JPG, JPEG and PNG formats allowed"
+      image: ""
     }));
 
-    setImage(null);
-    return;
-  }
-
-  
-  if (file.size > 2 * 1024 * 1024) {
-
-    setErrors((prev) => ({
-      ...prev,
-      image: "Image must be less than 2MB"
-    }));
-
-    setImage(null);
-    return;
-  }
-
-  
-  setErrors((prev) => ({
-    ...prev,
-    image: ""
-  }));
-  setImage(file);
-};
+    setImage(file);
+  };
 
   return (
 
-   <div className="w-full flex justify-center py-20">
+    <div className="w-full flex justify-center py-20">
 
       <div className="bg-white shadow-xl px-8 py-6 w-[420px] rounded-xl flex flex-col gap-5">
 
@@ -237,8 +241,8 @@ const Profile = () => {
           onClick={updateProfile}
           disabled={loading}
           className={`${loading
-            ? "bg-blue-400 cursor-not-allowed"
-            : "bg-blue-500 hover:bg-blue-600"
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
             } text-white rounded-md h-10 transition flex justify-center items-center gap-2`}
         >
 
@@ -315,4 +319,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

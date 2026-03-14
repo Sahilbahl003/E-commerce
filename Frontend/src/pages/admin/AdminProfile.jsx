@@ -15,7 +15,6 @@ import { getToken, getUser } from "../../utils/auth";
 const AdminProfile = () => {
 
   const navigate = useNavigate();
-  //const token = localStorage.getItem("token");
 
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
@@ -63,6 +62,7 @@ const AdminProfile = () => {
 
   }, [navigate]);
 
+
   const updateProfile = async () => {
 
     if (errors.image || loading) return;
@@ -89,6 +89,11 @@ const AdminProfile = () => {
       setUser(data.user || null);
       setImage(null);
 
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // 🔥 trigger navbar update instantly
+      window.dispatchEvent(new Event("userUpdated"));
+
     } catch (error) {
 
       toast.error(error.message || "Something went wrong");
@@ -97,6 +102,7 @@ const AdminProfile = () => {
 
     setLoading(false);
   };
+
 
   const confirmLogout = () => {
 
@@ -108,6 +114,7 @@ const AdminProfile = () => {
       navigate("/login");
     }, 1000);
   };
+
 
   const confirmRemoveImage = async () => {
 
@@ -123,6 +130,11 @@ const AdminProfile = () => {
       setImage(null);
       setUser(data.user);
 
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // 🔥 trigger navbar update instantly
+      window.dispatchEvent(new Event("userUpdated"));
+
       toast.success("Profile image removed");
 
     } catch (error) {
@@ -134,44 +146,44 @@ const AdminProfile = () => {
     setShowRemoveModal(false);
   };
 
+
   const handleImageChange = (file) => {
 
-  if (!file) return;
+    if (!file) return;
 
-  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
 
+    if (!allowedTypes.includes(file.type)) {
 
-  if (!allowedTypes.includes(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        image: "Only JPG, JPEG and PNG formats allowed"
+      }));
+
+      setImage(null);
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+
+      setErrors((prev) => ({
+        ...prev,
+        image: "Image must be less than 2MB"
+      }));
+
+      setImage(null);
+      return;
+    }
 
     setErrors((prev) => ({
       ...prev,
-      image: "Only JPG, JPEG and PNG formats allowed"
+      image: ""
     }));
 
-    setImage(null);
-    return;
-  }
+    setImage(file);
+  };
 
-  
-  if (file.size > 2 * 1024 * 1024) {
 
-    setErrors((prev) => ({
-      ...prev,
-      image: "Image must be less than 2MB"
-    }));
-
-    setImage(null);
-    return;
-  }
-
-  //  clear error if valid
-  setErrors((prev) => ({
-    ...prev,
-    image: ""
-  }));
-
-  setImage(file);
-};
   return (
 
     <div className="w-full min-h-screen flex justify-center items-center">
@@ -255,47 +267,8 @@ const AdminProfile = () => {
 
       </div>
 
-      {showPreview && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-          onClick={() => setShowPreview(false)}
-        >
-          <img
-            src={
-              image
-                ? URL.createObjectURL(image)
-                : user?.profileImage || profilePlaceholder
-            }
-            className="max-w-[90vw] max-h-[90vh] rounded-lg"
-          />
-
-          <div className="absolute top-5 right-5 text-white">
-            <RxCross1 className="w-6 h-6" />
-          </div>
-        </div>
-      )}
-
-      {showLogoutModal && (
-        <ConfirmModal
-          title="Logout Confirmation"
-          message="Are you sure you want to logout?"
-          confirmText="Logout"
-          onCancel={() => setShowLogoutModal(false)}
-          onConfirm={confirmLogout}
-        />
-      )}
-
-      {showRemoveModal && (
-        <ConfirmModal
-          title="Remove Profile Image"
-          message="Are you sure you want to remove your profile image?"
-          confirmText="Remove"
-          onCancel={() => setShowRemoveModal(false)}
-          onConfirm={confirmRemoveImage}
-        />
-      )}
-
     </div>
+
   );
 };
 

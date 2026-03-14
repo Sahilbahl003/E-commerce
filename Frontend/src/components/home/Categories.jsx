@@ -11,7 +11,8 @@ const Categories = () => {
 
         try {
 
-          const data = await getCategoriesService();
+          const data = await getCategoriesService(1,6);
+          console.log(data);
 
           if (data.success) {
             setCategories(data.categories);
@@ -43,7 +44,7 @@ const Categories = () => {
             categories.map((cat)=>(
                 <div key={cat._id}>
 
-                <div
+                <div onClick={()=>navigate(`/category/${cat._id}`)}
                   className='w-36 h-60 flex flex-col justify-start pt-5 rounded-[70px] items-center bg-amber-50 shadow-2xl hover:scale-105 transition duration-500'
                 >
 

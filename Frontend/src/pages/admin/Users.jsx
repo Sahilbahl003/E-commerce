@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; 
 import {
   getUsersService,
   toggleUserStatusService,
@@ -6,26 +7,51 @@ import {
 import { toast } from "react-toastify";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
+import Pagination from "../../components/pagination/Pagination";
+
 const Users = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 1. Logic to get initial page from LocalStorage (fallback to 1)
+  const [currentPage, setCurrentPage] = useState(() => {
+    const savedPage = localStorage.getItem("users_page");
+    return savedPage ? parseInt(savedPage) : 1;
+  });
+
   const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+
   const [showModal, setShowModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);  
 
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const fetchUsers = async (page) => {
       try {
-        const data = await getUsersService();
+        console.log("page", page);
+        const data = await getUsersService(page);
+        console.log("data", data);
+        setUsers(data.users || []);
 
-        if (data && Array.isArray(data.users)) {
-          setUsers(data.users || []);
-        }
+        // Sync local state and storage with backend response
+        setCurrentPage(data.currentPage || page);
+        localStorage.setItem("users_page", data.currentPage || page);
+        
+        setTotalPages(data.totalPages || 1);
+        console.log("data.current page", data.currentPage);
+        
       } catch (error) {
         toast.error("Failed to fetch users");
       }
     };
 
-    fetchUsers();
-  }, []);
+  // 2. Watch for page changes to update storage and fetch data
+  useEffect(() => {
+    localStorage.setItem("users_page", currentPage);
+    // Optional: Keep URL in sync too if you want the URL to look clean
+    navigate(`?page=${currentPage}`, { replace: true });
+    
+    fetchUsers(currentPage);
+  }, [currentPage, navigate]);
 
   const openToggleModal = (user) => {
     setSelectedUser(user);
@@ -88,7 +114,7 @@ const Users = () => {
                 <tr key={user._id} className="border-t">
                   <td className="p-4 font-medium">
                     <img
-                      src={user.profileImage}
+                      src={user.profileImage || null}
                       alt="profile"
                       className="w-12 h-12 object-cover rounded-full"
                     />
@@ -100,7 +126,7 @@ const Users = () => {
 
                   <td className="p-4">
                     {/* Toggle Switch */}
-                    <label className="inline-flex items-center cursor-pointer">
+                    <label className="inline-flex items-center  cursor-pointer">
                       <input
                         type="checkbox"
                         checked={user.isActive}
@@ -108,7 +134,7 @@ const Users = () => {
                         className="sr-only peer"
                       />
 
-                      <div className="w-11 h-6 bg-red-500 rounded-full peer peer-checked:bg-green-600 relative transition">
+                      <div className="w-11 h-6 bg-red-500 rounded-full peer peer-checked:bg-green-600 relative z-10 transition">
                         <div
                           className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full transition-transform ${
                             user.isActive ? "translate-x-5" : ""
@@ -131,6 +157,13 @@ const Users = () => {
           </tbody>
         </table>
       </div>
+
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
       {/* Confirm Modal */}
       {showModal && selectedUser && (
@@ -156,6 +189,7 @@ const Users = () => {
           }}
         />
       )}
+
     </div>
   );
 };

@@ -14,7 +14,8 @@ const AdminLayout = () => {
 
   const menuRef = useRef();
 
-  useEffect(() => {
+  const loadUser = () => {
+
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
 
@@ -26,10 +27,31 @@ const AdminLayout = () => {
       setUser(null);
     }
 
+  };
+
+  useEffect(() => {
+    loadUser();
   }, [location.pathname]);
 
-  
+
+  // 🔥 listen for profile update event
   useEffect(() => {
+
+    const handleUserUpdate = () => {
+      loadUser();
+    };
+
+    window.addEventListener("userUpdated", handleUserUpdate);
+
+    return () => {
+      window.removeEventListener("userUpdated", handleUserUpdate);
+    };
+
+  }, []);
+
+
+  useEffect(() => {
+
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setShowMenu(false);
@@ -41,21 +63,24 @@ const AdminLayout = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+
   }, []);
 
+
   const logout = () => {
+
     localStorage.clear();
     navigate("/login");
+
   };
+
 
   return (
 
     <div>
 
-      {/* NAVBAR */}
-      <div className="w-full bg-gray-900 h-[60px] flex items-center justify-between px-6">
+      <div className="w-full fixed left-0 top-0 bg-gray-900 h-[60px] z-20 flex items-center justify-between px-6">
 
-        {/* Logo */}
         <div
           onClick={() => navigate("/")}
           className="flex items-center gap-2 text-blue-400 text-xl font-bold cursor-pointer"
@@ -64,7 +89,6 @@ const AdminLayout = () => {
           E-comzy
         </div>
 
-        {/* Right side */}
         <div className="flex items-center gap-6">
 
           {!token && (
@@ -77,13 +101,14 @@ const AdminLayout = () => {
           )}
 
           {token && user && (
+
             <div ref={menuRef} className="relative">
 
-              {/* Profile Avatar */}
               <div
                 onClick={() => setShowMenu(!showMenu)}
                 className="cursor-pointer"
               >
+
                 {user.profileImage ? (
                   <img
                     src={user.profileImage}
@@ -94,10 +119,11 @@ const AdminLayout = () => {
                     {user.name?.[0]}
                   </div>
                 )}
+
               </div>
 
-              {/* Dropdown Menu */}
               {showMenu && (
+
                 <div className="absolute right-0 mt-3 w-40 bg-white shadow-lg rounded-md">
 
                   <button
@@ -118,28 +144,31 @@ const AdminLayout = () => {
                   </button>
 
                 </div>
+
               )}
 
             </div>
+
           )}
 
         </div>
 
       </div>
 
-      {/* MAIN LAYOUT */}
       <div className="flex">
 
         <AdminSidebar />
 
-        <div className="flex-1 p-6 min-h-screen">
+        <div className="flex-1 ml-70 mt-20 p-6 min-h-screen">
           <Outlet />
         </div>
 
       </div>
 
     </div>
+
   );
+
 };
 
 export default AdminLayout;

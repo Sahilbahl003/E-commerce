@@ -1,11 +1,13 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const WhyChooseUs = () => {
+    const navigate = useNavigate();
   return (
     <div className='flex flex-col items-center justify-center w-[1300px] mt-20'>
         <div className='flex justify-between w-[1300px] px-30'>
             <div className='text-4xl font-semibold text-zinc-800'>Why choose us</div>
-            <button className='text-white bg-blue-500 w-[120px] py-4 font-semibold rounded-4xl '>Shop Now</button>
+            <button onClick={() => navigate("/product")} className='text-white bg-blue-500 w-[120px] py-4 font-semibold rounded-4xl cursor-pointer'>Shop Now</button>
         </div>
         <div className='flex w-[1300px] mt-10 px-30'>
             <div className='flex flex-col w-1/4 gap-5 hover:bg-zinc-200 duration-300 transition-all px-10 py-10'>

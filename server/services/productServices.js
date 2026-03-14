@@ -40,11 +40,62 @@ exports.createProduct = async (data, file, userId) => {
   return product;
 };
 
-exports.getAllProducts = async () => {
-  return await Product.find()
+exports.getAllProducts = async (page, limit, filters = {}) => {
+
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (filters.category) {
+    query.category = filters.category;
+  }
+
+  if (filters.title) {
+    query.title = { $regex: filters.title, $options: "i" };
+  }
+
+  if (filters.minPrice || filters.maxPrice) {
+
+    query.price = {};
+
+    if (filters.minPrice) {
+      query.price.$gte = Number(filters.minPrice);
+    }
+
+    if (filters.maxPrice) {
+      query.price.$lte = Number(filters.maxPrice);
+    }
+
+  }
+
+  let sortOption = {};
+
+  if (filters.sort === "priceLow") {
+    sortOption.price = 1;
+  }
+
+  if (filters.sort === "priceHigh") {
+    sortOption.price = -1;
+  }
+
+  const totalProducts = await Product.countDocuments(query);
+
+  const products = await Product.find(query)
     .populate("category", "name")
-    .populate("seller", "name email");
+    .populate("seller", "name email")
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalProducts / limit);
+
+  return {
+    products,
+    totalPages
+  };
+
 };
+
 
 exports.getProductById = async (id) => {
   const product = await Product.findById(id)
@@ -103,4 +154,29 @@ exports.deleteProduct = async (id, userId) => {
   await Product.findByIdAndDelete(id);
 
   return true;
+};
+
+const Category = require("../models/Category");
+
+exports.searchProducts = async (keyword)=>{
+
+const productQuery = keyword
+?{
+$or:[
+{title:{$regex:keyword,$options:"i"}},
+{description:{$regex:keyword,$options:"i"}}
+]
+}
+:{};
+
+const categoryQuery = keyword
+?{name:{$regex:keyword,$options:"i"}}
+:{};
+
+const products = await Product.find(productQuery).limit(5);
+
+const categories = await Category.find(categoryQuery).limit(5);
+
+return { products, categories };
+
 };

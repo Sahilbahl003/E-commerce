@@ -32,11 +32,16 @@ const userSchema = new mongoose.Schema(
       default: "https://i.ibb.co/4pDNDk1/avatar.png",
     },
 
-    // Admin can enable/disable user login
+  
     isActive: {
       type: Boolean,
       default: true,
     },
+
+    cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cart"
+},
 
     otp: {
       type: String,

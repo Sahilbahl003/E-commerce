@@ -6,7 +6,9 @@ const AuthRoutes = require("./routes/authRoutes");
 const UserRoutes = require("./routes/userRoutes");
 const ProductRoutes = require("./routes/productRoutes");
 const AdminRoutes = require("./routes/adminRoutes");
+const CartRoutes = require("./routes/cartRoutes")
 const CategoryRoutes = require("./routes/categoryRoutes");
+const WishlistRoutes = require("./routes/wishlistRoutes");
 const dbConnect = require("./config/dbConnect");
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use("/api/v1",UserRoutes);
 app.use("/api/v1",ProductRoutes);
 app.use("/api/v1",AdminRoutes);
 app.use("/api/v1",CategoryRoutes);
+app.use("/api/v1",CartRoutes);
+app.use("/api/v1",WishlistRoutes);
 
 app.use((err, req, res, next) => {
 

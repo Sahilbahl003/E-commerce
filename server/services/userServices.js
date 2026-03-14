@@ -1,7 +1,6 @@
 const cloudinary = require("../config/cloudinary");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const { throwError, throwNotFoundError } = require("../utils/errors");
 
 const uploadToCloudinary = (file) => {
   return new Promise((resolve, reject) => {
@@ -18,7 +17,7 @@ exports.getUser = async (userId) => {
   const newUser = await User.findById(userId).select("-password");
 
   if (!newUser) {
-    throwNotFoundError("User");
+    throw new Error("User not found");
   }
 
   return newUser;
@@ -30,7 +29,7 @@ exports.updateProfileFull = async (userId, data, file) => {
   const user = await User.findById(userId);
 
   if (!user) {
-    throwNotFoundError("User");
+    throw new Error("User not found");
   }
 
   let imageUrl = user.profileImage;
@@ -46,7 +45,7 @@ exports.updateProfileFull = async (userId, data, file) => {
 
   if (newPassword) {
     if (!currentPassword) {
-      throwError("BAD_REQUEST");
+      throw new Error("Current password required");
     }
 
     const isMatch = await bcrypt.compare(
@@ -55,7 +54,7 @@ exports.updateProfileFull = async (userId, data, file) => {
     );
 
     if (!isMatch) {
-      throwError("BAD_REQUEST");
+      throw new Error("Current password is incorrect");
     }
 
     const hashed = await bcrypt.hash(newPassword, 10);
@@ -76,11 +75,11 @@ exports.removeProfileImage = async (userId) => {
   const user = await User.findById(userId);
 
   if (!user) {
-    throwNotFoundError("User");
+    throw new Error("User not found");
   }
 
   if (user.profileImage) {
-
+    
     const publicId = user.profileImage.split("/").slice(-1)[0].split(".")[0];
     await cloudinary.uploader.destroy(`profiles/${publicId}`);
   }

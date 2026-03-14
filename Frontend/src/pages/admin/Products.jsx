@@ -8,31 +8,59 @@ import {
   deleteProductService
 } from "../../services/products.service";
 
-const Products = () => {
+import Pagination from "../../components/pagination/Pagination";
 
-  const [products, setProducts] = useState([]);
+const Products = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // restore page from localStorage
+  const [currentPage, setCurrentPage] = useState(() => {
+    const savedPage = localStorage.getItem("productPage");
+    return savedPage ? parseInt(savedPage) : 1;
+  });
 
-    const fetchProducts = async () => {
+  const [products, setProducts] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
 
-      try {
 
-        const data = await getProductsService();
+  const fetchProducts = async (page) => {
 
-        setProducts(data.products || []);
+    try {
 
-      } catch (error) {
-        console.log("Error fetching products", error);
+      const data = await getProductsService({ page, limit: 5 });
+
+      console.log("data", data);
+
+      setProducts(data.products || []);
+      setTotalPages(data.totalPages || 1);
+
+      if (data.currentPage && data.currentPage !== page) {
+        setCurrentPage(data.currentPage);
+        localStorage.setItem("productPage", data.currentPage);
       }
 
-    };
+      console.log("from backend", data.currentPage);
 
-    fetchProducts();
+    } catch (error) {
 
-  }, []);
+      console.log("Error fetching products", error);
+
+    }
+
+  };
+
+
+  useEffect(() => {
+
+    localStorage.setItem("productPage", currentPage);
+
+    fetchProducts(currentPage);
+
+    console.log("currPage", currentPage);
+
+  }, [currentPage]);
+
 
   const deleteProduct = async (id) => {
 
@@ -50,11 +78,11 @@ const Products = () => {
 
   };
 
+
   return (
 
     <div className="p-6">
 
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
 
         <h1 className="text-2xl font-bold">Product List</h1>
@@ -68,7 +96,7 @@ const Products = () => {
 
       </div>
 
-      {/* Table */}
+
       <div className="bg-white shadow rounded-lg overflow-hidden">
 
         <table className="w-full">
@@ -139,6 +167,13 @@ const Products = () => {
         </table>
 
       </div>
+
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
     </div>
 

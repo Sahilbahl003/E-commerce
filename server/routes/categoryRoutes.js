@@ -4,7 +4,7 @@ const router = express.Router();
 
 const {auth} = require("../middlewares/Auth");
 const upload = require("../config/multer");
-const { createCategory, getCategories, getCategory, updateCategory, deleteCategory } = require("../controllers/categoryControllers");
+const { createCategory, getCategories, getCategory, updateCategory, deleteCategory, getCategoryById } = require("../controllers/categoryControllers");
 
 router.post("/categories", auth, upload.single("image"), createCategory);
 
@@ -18,6 +18,8 @@ router.put(
   upload.single("image"),
   updateCategory
 );
+
+//router.get("/category/:id", getCategoryById);
 
 
 router.delete("/categories/:id", auth, deleteCategory);

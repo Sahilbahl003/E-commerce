@@ -1,8 +1,12 @@
 import { apiGet, apiDelete, apiPost, apiPut } from "./apiHandler";
 
-export const getCategoriesApi = () => {
-  return apiGet("/categories");
+export const getCategoriesApi = (page = 1, limit = 5) => {
+  return apiGet(`/categories?page=${page}&limit=${limit}`);
 };
+
+export const getCategoryByIdApi = (id) => {
+  return apiGet(`/categories/${id}`);
+} ;
 
 export const deleteCategoryApi = (id) => {
   return apiDelete(`/categories/${id}`);

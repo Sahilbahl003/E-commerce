@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
 
 import {
   getCategoriesService,
@@ -11,6 +12,7 @@ const CategoryForm = () => {
 
   const [name, setName] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -76,6 +78,7 @@ const CategoryForm = () => {
       data = await updateCategoryService(id, formData);
     } else {
       data = await createCategoryService(formData);
+      
     }
 
     if (data.success) {
@@ -92,9 +95,9 @@ const CategoryForm = () => {
 
         <button
           onClick={() => navigate("/admin/categories")}
-          className="text-xl"
+          className="text-3xl cursor-pointer"
         >
-          ✕
+         <IoIosArrowBack />
         </button>
 
         <h1 className="text-2xl font-semibold">
@@ -116,6 +119,7 @@ const CategoryForm = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="border rounded p-2 w-80"
+            maxLength={50}
             required
           />
 
@@ -156,10 +160,19 @@ const CategoryForm = () => {
         </div>
 
         <button
+          disabled={loading}
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-md h-10 mt-2 transition flex justify-center items-center cursor-pointer disabled:opacity-70"
         >
-          {isEdit ? "Update Category" : "Publish Category"}
+        {loading ? (
+              <div className="flex gap-1 items-center justify-center">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-white">loading...</p>
+              </div>
+            ) : (
+              isEdit ? "Update Category" : "Publish Category"
+            )}
+          
         </button>
 
       </form>
@@ -171,3 +184,17 @@ const CategoryForm = () => {
 };
 
 export default CategoryForm;
+
+{/* <button
+            disabled={loading}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-md h-10 mt-2 transition flex justify-center items-center cursor-pointer disabled:opacity-70"
+          >
+            {loading ? (
+              <div className="flex gap-1 items-center justify-center">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-white">loading...</p>
+              </div>
+            ) : (
+              "Login"
+            )}
+          </button> */}
