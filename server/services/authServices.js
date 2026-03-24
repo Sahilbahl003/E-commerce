@@ -57,7 +57,7 @@ exports.login = async (data) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throwNotFoundError("User");
+    throwError("INVALID_CREDENTIALS");
   }
 
   if (!user.isActive) {
@@ -67,7 +67,7 @@ exports.login = async (data) => {
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throwError("BAD_REQUEST");
+    throwError("INVALID_CREDENTIALS");
   }
 
   const payload = {

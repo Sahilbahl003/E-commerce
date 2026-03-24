@@ -11,13 +11,13 @@ import {
 } from "../../services/profile.service";
 
 import { getToken, getUser } from "../../utils/auth";
-import { UserContext } from "../../context/UserContext"; // ⭐ added
+import { UserContext } from "../../context/UserContext"; // added
 
 const Profile = () => {
 
   const navigate = useNavigate();
 
-  const { setUser: updateContextUser } = useContext(UserContext); // ⭐ added
+  const { setUser: updateContextUser } = useContext(UserContext); // added
 
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
@@ -52,6 +52,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       const data = await getProfileService();
+      console.log(data);
 
       if (!data.success) {
         toast.error(data.message);
@@ -92,8 +93,8 @@ const Profile = () => {
       toast.success("Profile updated");
 
       setUser(data.user || null);
-      updateContextUser(data.user); // ⭐ update Navbar instantly
-      localStorage.setItem("user", JSON.stringify(data.user)); // ⭐ keep persistence
+      updateContextUser(data.user); //  update Navbar instantly
+      localStorage.setItem("user", JSON.stringify(data.user)); // keep persistence
 
       setImage(null);
 
@@ -109,6 +110,7 @@ const Profile = () => {
     localStorage.clear();
 
     toast.success("Logged out successfully");
+    //window.dispatchEvent(new Event("authChange"));
 
     setTimeout(() => {
       navigate("/login");
@@ -127,7 +129,7 @@ const Profile = () => {
       }
 
       setUser(data.user || null);
-      updateContextUser(data.user); // ⭐ update Navbar
+      updateContextUser(data.user); // update Navbar
       localStorage.setItem("user", JSON.stringify(data.user));
 
       setImage(null);
@@ -203,7 +205,7 @@ const Profile = () => {
 
             <label className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition text-sm">
 
-              Upload Profile
+              Upload
 
               <input
                 type="file"
@@ -217,7 +219,7 @@ const Profile = () => {
             <button
               type="button"
               onClick={() => setShowRemoveModal(true)}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition text-sm"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition text-sm cursor-pointer"
             >
               Remove
             </button>
@@ -243,7 +245,7 @@ const Profile = () => {
           className={`${loading
               ? "bg-blue-400 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-600"
-            } text-white rounded-md h-10 transition flex justify-center items-center gap-2`}
+            } text-white rounded-md h-10 transition flex justify-center items-center gap-2 cursor-pointer`}
         >
 
           {loading && (
@@ -256,14 +258,14 @@ const Profile = () => {
 
         <button
           onClick={() => navigate("/change-password")}
-          className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white rounded-md h-10 transition"
+          className="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white rounded-md h-10 transition cursor-pointer"
         >
           Change Password
         </button>
 
         <button
           onClick={() => setShowLogoutModal(true)}
-          className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-md h-10 transition"
+          className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-md h-10 transition cursor-pointer"
         >
           Logout
         </button>

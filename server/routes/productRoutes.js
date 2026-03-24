@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../config/multer");
-const {auth} = require("../middlewares/Auth");
+const { auth } = require("../middlewares/Auth");
+const { isAdmin } = require("../middlewares/isAdmin"); // ✅ added
 
 const {
   createProduct,
@@ -14,37 +15,39 @@ const {
 } = require("../controllers/productControllers");
 
 
-// Create Product
+// CREATE PRODUCT (ADMIN ONLY)
 router.post(
   "/products",
   auth,
+  isAdmin,
   upload.single("image"),
   createProduct
 );
 
-//router.get("/products/search", searchProducts);
-
+// GET ALL PRODUCTS (PUBLIC)
 router.get("/products", getAllProducts);
 
+//  GET SINGLE PRODUCT (PUBLIC)
 router.get("/products/:id", getProductById);
 
-
-// Update Product
+//  UPDATE PRODUCT (ADMIN ONLY)
 router.put(
   "/products/:id",
   auth,
-  upload.single("image"),   // allows updating image
+  isAdmin,
+  upload.single("image"),
   updateProduct
 );
 
-
-// Delete Product
+//  DELETE PRODUCT (ADMIN ONLY)
 router.delete(
   "/products/:id",
   auth,
+  isAdmin,
   deleteProduct
 );
 
+//  SEARCH (PUBLIC)
 router.get("/search", searchProducts);
 
 module.exports = router;

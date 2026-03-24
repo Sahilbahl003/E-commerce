@@ -1,27 +1,28 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProductByIdService } from "../../services/products.service";
-import { addToCartService } from "../../services/cart.service";
 import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "react-toastify";
 import { CartContext } from "../../context/CartContext";
+import { UserContext } from "../../context/UserContext";
 import WishlistButton from "../../components/ui/buttons/WishlistButton";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 const ProductDetail = () => {
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isClicked, setIsClicked] = useState(false);
-
   const navigate = useNavigate();
+
   const { id } = useParams();
 
   const { addToCart } = useContext(CartContext);
+  const { user } = useContext(UserContext);
 
   const fetchProduct = async () => {
 
     try {
-
       setLoading(true);
 
       const data = await getProductByIdService(id);
@@ -33,10 +34,8 @@ const ProductDetail = () => {
       setLoading(false);
 
     } catch (error) {
-
       console.error("Error fetching product:", error);
       setLoading(false);
-
     }
 
   };
@@ -45,36 +44,28 @@ const ProductDetail = () => {
     fetchProduct();
   }, [id]);
 
-  const handleClick = async () => {
+  const handleClick = () => {
 
-    try {
-
-      addToCart(product);
-
-      await addToCartService({
-        productId: product._id,
-        quantity: 1
-      });
-
-      setIsClicked(true);
-
-      toast.success("Item added to cart");
-
-      setTimeout(() => {
-        setIsClicked(false);
-      }, 1000);
-
-    } catch (error) {
-
-      console.error("Add to cart error:", error);
-
+    //  ADMIN BLOCK (NO TOAST)
+    if (user?.role === "admin") {
+      return;
     }
+
+    addToCart(product); //  single source of truth
+
+    setIsClicked(true);
+
+    toast.success("Item added to cart");
+
+    // setTimeout(() => {
+    //   setIsClicked(false);
+    // }, 1000);
 
   };
 
-  const buttonClasses = isClicked
-    ? "bg-gray-500"
-    : "bg-blue-500";
+  // const buttonClasses = isClicked
+  //   ? "bg-gray-500"
+  //   : "bg-blue-500";
 
   return (
 
@@ -91,9 +82,7 @@ const ProductDetail = () => {
         <div className="flex gap-x-10 justify-center items-start mt-10 mb-10">
 
           <div className="shadow-md shadow-zinc-400 p-5 w-[400px]">
-
             <img src={product.image} alt={product.title} width="400" />
-
           </div>
 
           <div className="w-[400px] flex flex-col gap-y-5">
@@ -106,19 +95,29 @@ const ProductDetail = () => {
               ₹ {product.price.toFixed(2)}
             </p>
 
-            {/* Buttons row */}
+            {/* Buttons */}
             <div className="flex gap-4">
 
-              <button
-                onClick={handleClick}
-                className={`${buttonClasses} text-white px-6 py-2 rounded-md transition`}
-              >
-                Add to Cart
-              </button>
+  {!isClicked ? (
+    <button
+      onClick={handleClick}
+      className="bg-blue-500 text-white px-6 py-2 rounded-md transition cursor-pointer"
+    >
+      Add to Cart
+    </button>
+  ) : (
+    <button
+      onClick={() => navigate("/cart")}
+      className="bg-blue-500 text-white px-8 py-2 rounded-md transition cursor-pointer flex items-center justify-center gap-2"
+    >
+      Go to Cart
+      <FaArrowRightLong /> 
+    </button>
+  )}
 
-              <WishlistButton product={product} />
+  <WishlistButton className="cursor-pointer" product={product} />
 
-            </div>
+</div>
 
           </div>
 

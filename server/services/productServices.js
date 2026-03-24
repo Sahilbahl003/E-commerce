@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 const cloudinary = require("../config/cloudinary");
 const { throwError, throwNotFoundError } = require("../utils/errors");
 
@@ -14,118 +15,121 @@ const uploadToCloudinary = (file) => {
 };
 
 exports.createProduct = async (data, file, userId) => {
-  const { title, description, price, stock, category } = data;
+  const { title, description, price, stock, category, subcategory } = data;
 
   if (!title || !description || !price || !stock || !category) {
     throwError("VALIDATION_ERROR");
   }
 
-  let imageUrl = "";
-
-  if (file) {
-    const result = await uploadToCloudinary(file);
-    imageUrl = result.secure_url;
+ 
+  if (subcategory) {
+    const sub = await Category.findById(subcategory);
+    if (!sub || sub.parentId.toString() !== category) {
+      throwError("INVALID_SUBCATEGORY");
+    }
   }
 
-  const product = await Product.create({
+  let image = "";
+  if (file) {
+    const result = await uploadToCloudinary(file);
+    image = result.secure_url;
+  }
+
+  return await Product.create({
     title,
     description,
     price,
     stockQuantity: stock,
     category,
-    image: imageUrl,
-    seller: userId,
+    subcategory,
+    image,
+    seller: userId
   });
-
-  return product;
 };
 
+
+
 exports.getAllProducts = async (page, limit, filters = {}) => {
-
   const skip = (page - 1) * limit;
+  let query = {};
 
-  const query = {};
+  // Filter by category and subcategories
+  if (filters.category && filters.category.length > 0) {
 
-  if (filters.category) {
-    query.category = filters.category;
+  const subcategories = await Category.find({
+    parentId: { $in: filters.category }
+  }).select("_id");
+
+  const subIds = subcategories.map(s => s._id);
+
+  query.$or = [
+    { category: { $in: filters.category } },
+    { subcategory: { $in: subIds } }
+  ];
+}
+
+  // If user specifically selects subcategories, override $or
+  if (filters.subcategory && filters.subcategory.length > 0) {
+    query.subcategory = { $in: filters.subcategory };
   }
 
+  // Title search
   if (filters.title) {
     query.title = { $regex: filters.title, $options: "i" };
   }
 
+  // Price range
   if (filters.minPrice || filters.maxPrice) {
-
     query.price = {};
-
-    if (filters.minPrice) {
-      query.price.$gte = Number(filters.minPrice);
-    }
-
-    if (filters.maxPrice) {
-      query.price.$lte = Number(filters.maxPrice);
-    }
-
+    if (filters.minPrice) query.price.$gte = Number(filters.minPrice);
+    if (filters.maxPrice) query.price.$lte = Number(filters.maxPrice);
   }
 
-  let sortOption = {};
+  // Sorting
+  let sort = {};
+  if (filters.sort === "priceLow") sort.price = 1;
+  if (filters.sort === "priceHigh") sort.price = -1;
 
-  if (filters.sort === "priceLow") {
-    sortOption.price = 1;
-  }
-
-  if (filters.sort === "priceHigh") {
-    sortOption.price = -1;
-  }
-
-  const totalProducts = await Product.countDocuments(query);
+  const total = await Product.countDocuments(query);
 
   const products = await Product.find(query)
     .populate("category", "name")
+    .populate("subcategory", "name")
     .populate("seller", "name email")
-    .sort(sortOption)
+    .sort(sort)
     .skip(skip)
     .limit(limit);
 
-  const totalPages = Math.ceil(totalProducts / limit);
-
   return {
     products,
-    totalPages
+    totalPages: Math.ceil(total / limit)
   };
-
 };
-
 
 exports.getProductById = async (id) => {
   const product = await Product.findById(id)
     .populate("seller", "name email");
 
-  if (!product) {
-    throwNotFoundError("Product");
-  }
-
+  if (!product) throwNotFoundError("Product");
   return product;
 };
 
 exports.updateProduct = async (id, data, file, userId) => {
   const product = await Product.findById(id);
+  if (!product) throwNotFoundError("Product");
 
-  if (!product) {
-    throwNotFoundError("Product");
+  const { title, description, price, stock, category, subcategory } = data;
+
+  if (subcategory) {
+    const sub = await Category.findById(subcategory);
+    if (!sub || sub.parentId.toString() !== category) {
+      throwError("INVALID_SUBCATEGORY");
+    }
   }
-
-  if (product.seller.toString() !== userId) {
-    throwError("UNAUTHORIZED");
-  }
-
-  const { title, description, price, stock, category } = data;
-
-  let imageUrl = product.image;
 
   if (file) {
     const result = await uploadToCloudinary(file);
-    imageUrl = result.secure_url;
+    product.image = result.secure_url;
   }
 
   product.title = title || product.title;
@@ -133,50 +137,36 @@ exports.updateProduct = async (id, data, file, userId) => {
   product.price = price || product.price;
   product.stockQuantity = stock || product.stockQuantity;
   product.category = category || product.category;
-  product.image = imageUrl;
+  product.subcategory = subcategory || product.subcategory;
 
   await product.save();
-
   return product;
 };
 
 exports.deleteProduct = async (id, userId) => {
   const product = await Product.findById(id);
-
-  if (!product) {
-    throwNotFoundError("Product");
-  }
-
-  if (product.seller.toString() !== userId) {
-    throwError("UNAUTHORIZED");
-  }
+  if (!product) throwNotFoundError("Product");
 
   await Product.findByIdAndDelete(id);
-
   return true;
 };
 
-const Category = require("../models/Category");
+exports.searchProducts = async (keyword) => {
+  const productQuery = keyword
+    ? {
+        $or: [
+          { title: { $regex: keyword, $options: "i" } },
+          { description: { $regex: keyword, $options: "i" } }
+        ]
+      }
+    : {};
 
-exports.searchProducts = async (keyword)=>{
+  const categoryQuery = keyword
+    ? { name: { $regex: keyword, $options: "i" } }
+    : {};
 
-const productQuery = keyword
-?{
-$or:[
-{title:{$regex:keyword,$options:"i"}},
-{description:{$regex:keyword,$options:"i"}}
-]
-}
-:{};
+  const products = await Product.find(productQuery).limit(5);
+  const categories = await Category.find(categoryQuery).limit(5);
 
-const categoryQuery = keyword
-?{name:{$regex:keyword,$options:"i"}}
-:{};
-
-const products = await Product.find(productQuery).limit(5);
-
-const categories = await Category.find(categoryQuery).limit(5);
-
-return { products, categories };
-
+  return { products, categories };
 };

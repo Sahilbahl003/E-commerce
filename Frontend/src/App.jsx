@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-
+import './App.css'
 import UserLayout from "./components/layout/UserLayout";
 import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedAdmin from "./components/routes/ProtectedAdmin";
@@ -27,6 +27,12 @@ import Cart from "./pages/user/Cart";
 import Pagination from "./components/pagination/Pagination";
 import CategorySidebar from "./components/layout/CategorySidebar";
 import Wishlist from "./pages/user/Wishlist";
+import SubCategoryForm from "./pages/admin/SubcategoryForm";
+import SubCategories from "./pages/admin/Subcategories";
+import Checkout from "./pages/user/Checkout";
+import Order from "./pages/user/Order"
+import OrderDetails from "./pages/user/OrderDetails";
+import PaymentSuccess from "./pages/user/PaymentSuccess";
 
 function App() {
 return ( <Routes className="overflow-x-hidden">
@@ -47,6 +53,13 @@ return ( <Routes className="overflow-x-hidden">
     <Route path="/pagi" element={<Pagination/>}/>
     <Route path="/catSidebar" element={<CategorySidebar/>}/>
     <Route path="/wishlist" element={<Wishlist/>}/>
+    <Route path="/checkout" element={<Checkout/>} />
+    <Route path="/orders" element={<Order/>} />
+     <Route path="/orders/:id" element={<OrderDetails/>} />
+     <Route path="/success" element={<PaymentSuccess />} />
+
+    {/* <Route path="/subcategory" element={<SubCategoryForm/>} />
+    <Route path="/subcategorylist" element={<SubCategories/>}/> */}
   </Route>
 
   {/* ADMIN LAYOUT */}
@@ -65,7 +78,10 @@ return ( <Routes className="overflow-x-hidden">
     <Route path="add-product" element={<ProductForm />} />
     <Route path="edit-product/:id" element={<ProductForm />} />
     <Route path="categories" element={<Categories />} />
-    <Route path="add-category" element={<CategoryForm />} />  {/* NEW ROUTE */}
+    <Route path="subcategories" element={<SubCategories/>}/>
+    <Route path="add-subcategory" element={<SubCategoryForm/>}/>
+    <Route path="edit-subcategory/:id" element={<SubCategoryForm/>}/>
+    <Route path="add-category" element={<CategoryForm />} />  
     <Route path="edit-category/:id" element={<CategoryForm />} />
     <Route path="orders" element={<Orders />} />
     <Route path="profile" element={<AdminProfile />} />
@@ -81,3 +97,10 @@ return ( <Routes className="overflow-x-hidden">
 }
 
 export default App;
+
+
+// import OrdersUser from "./pages/user/Orders";
+// import OrderDetails from "./pages/user/OrderDetails";
+
+// <Route path="/orders" element={<OrdersUser />} />
+// <Route path="/orders/:id" element={<OrderDetails />} />

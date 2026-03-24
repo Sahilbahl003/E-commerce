@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
+import { validateField, validateForm } from "../../utils/validation";
 
 import { getCategoriesService } from "../../services/categories.service";
 
@@ -9,6 +10,7 @@ import {
   createProductService,
   updateProductService
 } from "../../services/products.service";
+import { toast } from "react-toastify";
 
 const ProductForm = () => {
 
@@ -22,10 +24,47 @@ const ProductForm = () => {
   const [price,setPrice] = useState("");
   const [stock,setStock] = useState("");
   const [category,setCategory] = useState("");
+
+  const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState("");
+
+  const [subCategory,setSubCategory] = useState("");
+  const [subCategories,setSubCategories] = useState([]);
+
   const [categories,setCategories] = useState([]);
   const [imagePreview,setImagePreview] = useState(null);
+  const [loading,setLoading] = useState(false);
 
   const fileRef = useRef();
+
+  // VALIDATION HANDLERS
+  const changeHandler = (e) => {
+
+    const { name, value } = e.target;
+
+    if(name === "title") setTitle(value);
+    if(name === "description") setDescription(value);
+    if(name === "price") setPrice(value);
+    if(name === "stock") setStock(value);
+    if(name === "category") setCategory(value);
+    if(name === "subCategory") setSubCategory(value);
+
+    const error = validateField(name,value);
+
+    setErrors((prev)=>({...prev,[name]:error}));
+
+  };
+
+  const blurHandler = (e)=>{
+
+    const { name,value } = e.target;
+
+    const error = validateField(name,value);
+
+    setErrors((prev)=>({...prev,[name]:error}));
+
+  };
+
 
   // Fetch categories
   useEffect(() => {
@@ -34,9 +73,10 @@ const ProductForm = () => {
 
       try {
 
-        const data = await getCategoriesService();
+        const data = await getCategoriesService(1, 100);
 
-        setCategories(data.categories || []);
+        const main = (data.categories || []).filter(c => !c.parentId);
+        setCategories(main);
 
       } catch (error) {
         console.log("Error fetching categories", error);
@@ -47,6 +87,36 @@ const ProductForm = () => {
     fetchCategories();
 
   },[]);
+
+
+  // FETCH SUBCATEGORIES WHEN CATEGORY CHANGES
+  useEffect(() => {
+
+    const fetchSubCategories = async () => {
+
+      if(!category){
+        setSubCategories([]);
+        setSubCategory("");
+        return;
+      }
+
+      try {
+
+        const data = await getCategoriesService(1, 100, category);
+
+        if(data.success){
+          setSubCategories(data.categories || []);
+        }
+
+      } catch (error) {
+        console.log("Error fetching subcategories", error);
+      }
+
+    };
+
+    fetchSubCategories();
+
+  },[category]);
 
 
   // Fetch product when editing
@@ -66,7 +136,19 @@ const ProductForm = () => {
           setDescription(product.description || "");
           setPrice(product.price || "");
           setStock(product.stockQuantity || "");
-          setCategory(product.category?._id || "");
+
+          const catId =
+            product.category?.parentId?._id ||
+            product.category?._id || "";
+
+          setCategory(catId);
+
+          setSubCategory(
+            product.category?.parentId
+              ? product.category._id
+              : ""
+          );
+
           setImagePreview(product.image || null);
 
         }
@@ -89,7 +171,19 @@ const ProductForm = () => {
     const file = e.target.files[0];
 
     if(file){
+
+      const error = validateField("image", file.name);
+
+      if(error){
+        setErrors((prev)=>({...prev,image:error}));
+        setImagePreview(null);
+        return;
+      }
+
+      setErrors((prev)=>({...prev,image:""}));
+
       setImagePreview(URL.createObjectURL(file) || null);
+
     }
 
   };
@@ -99,6 +193,26 @@ const ProductForm = () => {
 
     e.preventDefault();
 
+    const validationErrors = validateForm({
+      title,
+      description,
+      price,
+      stock,
+      category
+    });
+
+    if(!imagePreview && !isEdit){
+      validationErrors.image = "Image is required";
+    }
+
+    setErrors(validationErrors);
+
+    if(Object.keys(validationErrors).length > 0){
+      return;
+    }
+
+    setLoading(true);
+
     try {
 
       const formData = new FormData();
@@ -107,7 +221,9 @@ const ProductForm = () => {
       formData.append("description", description);
       formData.append("price", price);
       formData.append("stock", stock);
-      formData.append("category", category);
+
+      formData.append("category", subCategory || category);
+      formData.append("subCategory", subCategory || "");
 
       if (fileRef.current?.files[0]) {
         formData.append("image", fileRef.current.files[0]);
@@ -127,8 +243,13 @@ const ProductForm = () => {
 
     } catch (error) {
 
+      toast.error("All fields are required");
       console.log("Product error:", error.message);
+      setLoading(false);
 
+    }
+    finally{
+      setLoading(false);
     }
 
   };
@@ -137,8 +258,6 @@ const ProductForm = () => {
   return (
 
 <div className="p-6">
-
-{/* Header */}
 
 <div className="flex items-center gap-4 mb-6">
 
@@ -157,8 +276,6 @@ className="text-3xl cursor-pointer"
 
 <form onSubmit={handleSubmit} className="space-y-6">
 
-{/* Product Name */}
-
 <div>
 
 <label className="block mb-2 font-medium">
@@ -167,15 +284,17 @@ Product Name
 
 <input
 type="text"
+name="title"
 value={title}
-onChange={(e)=>setTitle(e.target.value)}
+onChange={changeHandler}
+onBlur={blurHandler}
 className="border rounded p-2 w-full"
 maxLength={50}
 />
 
-</div>
+{errors.title && <p className="text-red-600 text-xs">{errors.title}</p>}
 
-{/* Description */}
+</div>
 
 <div>
 
@@ -184,15 +303,17 @@ Product Description
 </label>
 
 <textarea
+name="description"
 value={description}
-onChange={(e)=>setDescription(e.target.value)}
+onChange={changeHandler}
+onBlur={blurHandler}
 className="border rounded p-2 w-full h-32"
 maxLength={300}
 />
 
-</div>
+{errors.description && <p className="text-red-600 text-xs">{errors.description}</p>}
 
-{/* Category Dropdown */}
+</div>
 
 <div>
 
@@ -201,8 +322,13 @@ Category
 </label>
 
 <select
+name="category"
 value={category}
-onChange={(e)=>setCategory(e.target.value)}
+onChange={(e)=>{
+  changeHandler(e);
+  setSubCategory("");
+}}
+onBlur={blurHandler}
 className="border rounded p-2 w-full"
 >
 
@@ -216,9 +342,39 @@ className="border rounded p-2 w-full"
 
 </select>
 
+{errors.category && <p className="text-red-600 text-xs">{errors.category}</p>}
+
 </div>
 
-{/* Price & Stock */}
+{subCategories.length > 0 && (
+
+<div>
+
+<label className="block mb-2 font-medium">
+Sub Category
+</label>
+
+<select
+name="subCategory"
+value={subCategory}
+onChange={changeHandler}
+onBlur={blurHandler}
+className="border rounded p-2 w-full"
+>
+
+<option value="">Select Sub Category</option>
+
+{subCategories.map((sub)=>(
+<option key={sub._id} value={sub._id}>
+{sub.name}
+</option>
+))}
+
+</select>
+
+</div>
+
+)}
 
 <div className="grid grid-cols-2 gap-4">
 
@@ -227,14 +383,20 @@ className="border rounded p-2 w-full"
 <label className="block mb-1">Price</label>
 
 <input
-  type="text"
-  inputMode="numeric"
-  value={price}
-  onChange={(e) => setPrice(e.target.value.replace(/[^0-9]/g, ''))}
-  className="border rounded p-2 w-full"
-  maxLength={10}
+type="text"
+name="price"
+inputMode="numeric"
+value={price}
+onChange={(e)=>{
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  changeHandler(e);
+}}
+onBlur={blurHandler}
+className="border rounded p-2 w-full"
+maxLength={10}
 />
 
+{errors.price && <p className="text-red-600 text-xs">{errors.price}</p>}
 
 </div>
 
@@ -244,17 +406,22 @@ className="border rounded p-2 w-full"
 
 <input
 type="text"
+name="stock"
 value={stock}
-onChange={(e)=>setStock(e.target.value.replace(/[^0-9]/g, ''))}
+onChange={(e)=>{
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  changeHandler(e);
+}}
+onBlur={blurHandler}
 className="border rounded p-2 w-full"
 maxLength={10}
 />
 
-</div>
+{errors.stock && <p className="text-red-600 text-xs">{errors.stock}</p>}
 
 </div>
 
-{/* Image Upload */}
+</div>
 
 <div>
 
@@ -278,13 +445,14 @@ className="w-full h-full object-cover rounded"
 ) : (
 
 <div className="text-center text-gray-500">
-
 <p className="text-sm">Image Upload</p>
 </div>
 
 )}
 
 </div>
+
+{errors.image && <p className="text-red-600 text-xs">{errors.image}</p>}
 
 <input
 type="file"
@@ -295,14 +463,24 @@ className="hidden"
 
 </div>
 
-{/* Submit */}
-
 <button
+disabled={loading}
 type="submit"
-className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 cursor-pointer"
 >
-{isEdit ? "Update Product" : "Publish Product"}
+{loading ? (
+<div className="flex gap-1 items-center justify-center">
+<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+<p className="text-white">loading...</p>
+</div>
+) : (
+isEdit ? "Update Product" : "Publish Product"
+)}
 </button>
+
+{formError && (
+<p className="text-red-600 text-sm mt-2">{formError}</p>
+)}
 
 </form>
 

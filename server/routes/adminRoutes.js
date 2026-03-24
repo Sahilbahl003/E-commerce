@@ -28,8 +28,8 @@ router.get("/products", auth, isAdmin, getAllProductsAdmin);
 
 router.delete("/products/:id", auth, isAdmin, deleteProductAdmin);
 
-router.get("/orders", auth, isAdmin, getAllOrders);
+router.get("/orders", auth, getAllOrders);
 
-router.put("/orders/:id", auth, isAdmin, updateOrderStatus);
+router.put("/orders/:id", auth, updateOrderStatus);
 
 module.exports = router;

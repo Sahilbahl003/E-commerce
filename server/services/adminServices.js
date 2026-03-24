@@ -4,20 +4,27 @@ const Order = require("../models/Order");
 const Category = require("../models/Category");
 const { throwNotFoundError, throwError } = require("../utils/errors");
 
-exports.getDashboardStats = async () => {
-  const totalUsers = await User.countDocuments({ role: "user" });
-  const totalProducts = await Product.countDocuments();
-  const totalOrders = await Order.countDocuments();
+exports.getDashboardStats = async () => {  
+  const totalUsers = await User.countDocuments({ role: "user" });  
+  const totalProducts = await Product.countDocuments();  
+  const totalOrders = await Order.countDocuments();  
   const totalCategories = await Category.countDocuments();
-  const totalRevenue = 0;
 
-  return {
-    users: totalUsers,
-    products: totalProducts,
-    orders: totalOrders,
-    categories: totalCategories,
-    revenue: totalRevenue[0]?.revenue || 0
-  };
+  const revenueData = await Order.aggregate([    
+       { $group: 
+         {   _id: null,        
+          totalRevenue: { $sum: "$total" }     
+         }    
+        }  ]);
+
+  const totalRevenue = revenueData[0]?.totalRevenue || 0;
+  return {    
+         users: totalUsers,    
+         products: totalProducts,    
+         orders: totalOrders,    
+         categories: totalCategories,    
+         revenue: totalRevenue  
+        };
 };
 
 exports.getAllUsers = async (page, limit) => {
@@ -61,8 +68,24 @@ exports.deleteProductAdmin = async (id) => {
   await Product.findByIdAndDelete(id);
 };
 
-exports.getAllOrders = async () => {
-  return await Order.find().populate("user", "name email");
+exports.getAllOrders = async (page = 1, limit = 5) => {
+
+  const skip = (page - 1) * limit;
+
+  const orders = await Order.find()
+    .populate("user", "name email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalOrders = await Order.countDocuments();
+
+  const totalPages = Math.ceil(totalOrders / limit);
+
+  return {
+    orders,
+    totalPages
+  };
 };
 
 exports.updateOrderStatus = async (id, status) => {
@@ -74,6 +97,10 @@ exports.updateOrderStatus = async (id, status) => {
 
   order.status = status;
   await order.save();
+
+  
+  await order.populate("user", "email");
+
   return order;
 };
 

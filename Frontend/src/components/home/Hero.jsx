@@ -23,7 +23,7 @@ const Hero = () => {
             <p className='text-zinc-500 mt-20  text-xl'>E-comzy is the best place for you to find your fashion <br/>clothes with reasonable price and trust</p>
             <div className='flex mt-5 gap-4 text-xs'>
                 <button onClick={() => navigate("/product")} className='text-white bg-blue-500 w-[120px] py-4 font-semibold rounded-4xl cursor-pointer'>Shop Now</button>
-                <button className='text-zinc-700 border-1 border-zinc-700 font-semibold bg-white text-zinc-700 w-[120px] rounded-4xl '>Learn More</button>
+                <button className='text-zinc-700 border-1 border-zinc-700 font-semibold bg-white text-zinc-700 w-[120px] cursor-pointer rounded-4xl '>Learn More</button>
             </div> 
         </div>
 

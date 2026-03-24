@@ -7,28 +7,29 @@ const Categories = () => {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
 
-    const fetchCategories = async () => {
-
-        try {
-
-          const data = await getCategoriesService(1,6);
-          console.log(data);
-
-          if (data.success) {
-            setCategories(data.categories);
-          } else {
-            console.error(data.message || "Failed to fetch categories");
-          }
-
-        } catch (error) {
-          console.error("Error fetching categories:", error);
-        }
-
-    };
-
     useEffect(() => {
-        fetchCategories();
-    }, []);
+    
+      const fetchCategories = async () =>{
+        try{
+          const data = await getCategoriesService(1, 10, null);
+    
+          if(data.success){
+            const mainCategories = data.categories.filter(cat => !cat.parentId);
+            setCategories(mainCategories);
+           // fetchSubCategories(mainCategories);
+          }
+    
+        }catch(err){
+          console.log(err);
+        }
+      };
+    
+      fetchCategories();
+    
+    },[]);
+    
+  
+    
 
   return (
 

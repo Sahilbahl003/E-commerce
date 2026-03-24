@@ -42,8 +42,8 @@ const Login = () => {
     const validationErrors = validateForm(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setFormError("Invalid email or password");
-      toast.error("Invalid email or password");
+      // setFormError("Invalid email or password");
+      // toast.error("Invalid email or password");
       return;
     }
 
@@ -55,6 +55,8 @@ const Login = () => {
 
       toast.success(data.message);
 
+      //window.dispatchEvent(new Event("authChange"));
+
       if (data.user.role === "admin") {
         navigate("/admin");
       } else {
@@ -64,6 +66,7 @@ const Login = () => {
     } catch (error) {
 
       const message = error.message || "Login failed";
+      console.log("message",message)
 
       if (message.toLowerCase().includes("inactive")) {
 
@@ -71,8 +74,12 @@ const Login = () => {
         setShowModal(true);
 
       } else {
+        message.toLowerCase().includes("inactive");
+        setModalMessage(message);
+        setShowModal(true);
 
-        toast.error(message);
+        //toast.error("Hi",message);
+
         setFormError("Something went wrong");
 
       }
@@ -194,8 +201,8 @@ const Login = () => {
       {showModal && (
         <ConfirmModal
           title="Account Inactive"
-          message={modalMessage}
-          cancelText="Back"
+          message="To activate your account please contact Admin"
+          cancelText="Close"
           hideConfirm={true}
           onCancel={() => setShowModal(false)}
         />

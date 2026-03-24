@@ -9,6 +9,7 @@ const AdminRoutes = require("./routes/adminRoutes");
 const CartRoutes = require("./routes/cartRoutes")
 const CategoryRoutes = require("./routes/categoryRoutes");
 const WishlistRoutes = require("./routes/wishlistRoutes");
+const OrderRoutes = require("./routes/orderRoutes");
 const dbConnect = require("./config/dbConnect");
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/api/v1",AdminRoutes);
 app.use("/api/v1",CategoryRoutes);
 app.use("/api/v1",CartRoutes);
 app.use("/api/v1",WishlistRoutes);
+app.use("/api/v1",OrderRoutes);
 
 app.use((err, req, res, next) => {
 

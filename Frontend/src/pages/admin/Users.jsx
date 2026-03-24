@@ -195,3 +195,5 @@ const Users = () => {
 };
 
 export default Users;
+
+//i want exact same logic of pagination in the Category list but the difference is category is not in admin controllers and user is in admin controller but i made seperate controller for category controller so how can i do it without changing the existing logic 

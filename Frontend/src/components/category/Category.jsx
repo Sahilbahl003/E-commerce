@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCategoryByIdService } from "../../services/categories.service";
+import { getCategoryByIdService, getCategoriesService } from "../../services/categories.service";
 import { getProductsService } from "../../services/products.service";
 import ClipLoader from "react-spinners/ClipLoader";
 import FilterSidebar from "../../components/layout/FilterSidebar";
@@ -16,80 +16,112 @@ const Category = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [filters, setFilters] = useState({
-    title: "",
-    minPrice: "",
-    maxPrice: "",
-    sort: "",
-    page: 1,
-    limit: 9
+  const [subCategories, setSubCategories] = useState([]);
+
+  
+  const [filters, setFilters] = useState(() => {
+    const savedFilters = localStorage.getItem("filters");
+
+    return savedFilters
+      ? JSON.parse(savedFilters)
+      : {
+          title: "",
+          minPrice: 0,
+          maxPrice: 10000,
+          sort: "",
+          page: 1,
+          limit: 9,
+          subCategory: [] 
+        };
   });
 
-  // debounce filters
-  const debouncedFilters = useDebounce(filters, 500);
+
+  const debouncedFilters = useDebounce(filters, 1000);
+
+  // Save filters
+  useEffect(() => {
+    localStorage.setItem("filters", JSON.stringify(filters));
+  }, [filters]);
 
   // fetch category
   const fetchCategory = async () => {
     try {
-
       const data = await getCategoryByIdService(id);
 
       if (data.success) {
         setCategory(data.category);
       }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  // fetch subcategories
+  const fetchSubCategories = async () => {
+    try {
+      const data = await getCategoriesService(1, 50, id);
+
+      if (data.success) {
+        setSubCategories(data.categories);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   // fetch products
-  const fetchProducts = async () => {
+  // fetch products
+const fetchProducts = async () => {
+  try {
+    setLoading(true);
 
-    try {
+    // Prepare category filter: always include main category + any selected subcategories
+    const categoryIds = [id]; // main category
 
-      setLoading(true);
-
-      const data = await getProductsService({
-        category: id,
-        ...debouncedFilters
-      });
-
-      if (data.success) {
-        setProducts(data.products);
-      }
-
-      setLoading(false);
-
-    } catch (error) {
-
-      console.error(error);
-      setLoading(false);
-
+    if (filters.subCategory && filters.subCategory.length > 0) {
+      categoryIds.push(...filters.subCategory); // add selected subcategories
     }
 
-  };
+    const data = await getProductsService({
+      ...debouncedFilters,
+      category: categoryIds // send array of IDs
+    });
 
-  // category fetch
+    if (data.success) {
+      setProducts(data.products);
+    }
+
+    setLoading(false);
+  } catch (error) {
+    console.error(error);
+    setLoading(false);
+  }
+};
+
+  // init
   useEffect(() => {
     fetchCategory();
+    fetchSubCategories();
   }, [id]);
 
-  // products fetch
+  // refetch on filters change
   useEffect(() => {
+  if (subCategories.length >= 0) {
     fetchProducts();
-  }, [debouncedFilters, id]);
+  }
+}, [debouncedFilters, id, subCategories]);
 
   return (
 
-   <div className="flex w-full gap-8 mt-[90px] mb-20 px-6">
+    <div className="flex w-full gap-8 mt-[90px] mb-20 px-6">
 
+      {/*  PASS subCategories */}
       <FilterSidebar
         filters={filters}
         setFilters={setFilters}
+        subCategories={subCategories}
       />
 
-      {/* Products section */}
       <div className="flex-1">
 
         <h2 className="text-4xl font-semibold mb-6">
@@ -134,9 +166,8 @@ const Category = () => {
                     ₹{product.price}
                   </p>
 
-                  {/* Wishlist Button */}
                   <div
-                    className="mt-3"
+                    className="mt-3 cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <WishlistButton product={product} />

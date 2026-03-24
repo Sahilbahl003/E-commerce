@@ -31,17 +31,18 @@ exports.getAllProducts = async (req, res) => {
   try {
 
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 10;
 
     console.log("req.query.page",parseInt(req.query.page));
 
     const filters = {
-      category: req.query.category,
-      title: req.query.title,
-      minPrice: req.query.minPrice,
-      maxPrice: req.query.maxPrice,
-      sort: req.query.sort
-    };
+  category: req.query.category,
+  subcategory: req.query.subcategory, 
+  title: req.query.title,
+  minPrice: req.query.minPrice,
+  maxPrice: req.query.maxPrice,
+  sort: req.query.sort
+};
 
     const data = await productService.getAllProducts(page, limit, filters);
 

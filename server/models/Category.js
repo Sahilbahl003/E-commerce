@@ -1,19 +1,23 @@
 const mongoose = require("mongoose");
 
 const categorySchema = new mongoose.Schema({
-
-  name:{
-    type:String,
-    required:true,
-    unique:true,
-    trim:true
+  name: {
+    type: String,
+    required: true,
+    trim: true
   },
-
-  image:{
-    type:String,
-    required:true
+  image: {
+    type: String,
+    required: true
+  },
+  parentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    default: null
   }
+}, { timestamps: true });
 
-},{timestamps:true});
+// Compound index: name + parentId must be unique
+categorySchema.index({ name: 1, parentId: 1 }, { unique: true });
 
 module.exports = mongoose.model("Category", categorySchema);

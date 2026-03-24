@@ -18,6 +18,7 @@ const errorMessages = {
   DUPLICATE_EMAIL: "Email already exists",
   INVALID_TOKEN: "Invalid token",
   TOKEN_EXPIRED: "Token expired",
+  INVALID_CREDENTIALS: "Invalid email or password",
 };
 
 // Error status codes
@@ -31,6 +32,7 @@ const errorStatusCodes = {
   DUPLICATE_EMAIL: 409,
   INVALID_TOKEN: 401,
   TOKEN_EXPIRED: 401,
+  INVALID_CREDENTIALS: 401,
 };
 
 // Utility functions to throw errors

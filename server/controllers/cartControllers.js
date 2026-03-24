@@ -1,14 +1,17 @@
 const { addToCartService, getCartService, updateQuantityService, removeCartItemService, mergeCartService } = require("../services/cartServices");
 
-
-
-
 exports.addToCart = async (req, res) => {
 
   try {
 
-    const userId = req.user.id;
+    //  BLOCK ADMIN
+    if (req.user.role === "admin") {
+      return res.status(403).json({
+        success: false,
+      });
+    }
 
+    const userId = req.user.id;
     const { productId, quantity } = req.body;
 
     const cart = await addToCartService(userId, productId, quantity);
@@ -29,8 +32,6 @@ exports.addToCart = async (req, res) => {
   }
 
 };
-
-
 
 exports.getCart = async (req, res) => {
 
@@ -56,14 +57,11 @@ exports.getCart = async (req, res) => {
 
 };
 
-
-
 exports.updateQuantity = async (req, res) => {
 
   try {
 
     const userId = req.user.id;
-
     const { productId, quantity } = req.body;
 
     const cart = await updateQuantityService(userId, productId, quantity);
@@ -85,14 +83,11 @@ exports.updateQuantity = async (req, res) => {
 
 };
 
-
-
 exports.removeItem = async (req, res) => {
 
   try {
 
     const userId = req.user.id;
-
     const productId = req.params.id;
 
     const cart = await removeCartItemService(userId, productId);
@@ -114,14 +109,11 @@ exports.removeItem = async (req, res) => {
 
 };
 
-
-
 exports.mergeCart = async (req, res) => {
 
   try {
 
     const userId = req.user.id;
-
     const guestCart = req.body.items;
 
     const cart = await mergeCartService(userId, guestCart);

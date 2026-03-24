@@ -93,20 +93,30 @@ exports.deleteProductAdmin = async (req, res) => {
   }
 };
 
-exports.getAllOrders = async (req, res) => {  
-  try {    
-    const orders = await adminService.getAllOrders();
+exports.getAllOrders = async (req, res) => {
 
-    res.status(200).json({      
-      success: true,      
-      orders    
+  try {
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
+    const data = await adminService.getAllOrders(page, limit);
+
+    res.status(200).json({
+      success: true,
+      orders: data.orders,
+      currentPage: page,
+      totalPages: data.totalPages
     });
 
-  } catch (error) {    
-    res.status(500).json({      
-      success: false,      
-      message: "Error fetching orders"    
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: "Error fetching orders",
+      error: error.message
     });
+
   }
 };
 

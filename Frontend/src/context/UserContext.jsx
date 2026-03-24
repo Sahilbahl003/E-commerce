@@ -7,7 +7,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
 
-  // 🔥 WATCH TOKEN CHANGE (LOGIN / LOGOUT)
+  //  WATCH TOKEN CHANGE (LOGIN / LOGOUT)
   useEffect(() => {
 
     const interval = setInterval(() => {

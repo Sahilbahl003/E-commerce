@@ -1,14 +1,26 @@
-import React from 'react'
-import { useState,useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ClipLoader from 'react-spinners/ClipLoader';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 import { getProductsService } from "../../services/products.service";
-import { getCategoriesService } from '../../services/categories.service';
+import { getCategoriesService } from "../../services/categories.service";
+import FilterSidebar from "../layout/FilterSidebar";
 
 const Product = () => {
-
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [filters, setFilters] = useState({
+  title: "",
+  minPrice: 0,
+  maxPrice: 10000,
+  sort: "",
+  category: [],
+  subCategory: []
+});
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,140 +28,116 @@ const Product = () => {
     fetchCategories();
   }, []);
 
-  const [categories, setCategories] = useState([]);
-
-  const fetchCategories = async () => {
-
-    try {
-
-      const data = await getCategoriesService(1,100);
-      console.log(data);
-
-      if (data.success) {
-        setCategories(data.categories);
-      } else {
-        console.error(data.message || "Failed to fetch categories");
-      }
-
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-
-  };
-
+  // FETCH PRODUCTS
   const fetchProducts = async () => {
-
     try {
-
       setLoading(true);
-
-      const data = await getProductsService(1,100);
-      console.log(data);
-
+      const data = await getProductsService(1, 100);
       setProducts(data.products || []);
       setLoading(false);
-
-
     } catch (error) {
-
-      console.error("error fetching products:", error);
+      console.error(error);
       setLoading(false);
-
     }
-
   };
 
-  return (
+  // FETCH CATEGORIES
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategoriesService(1, 100);
+      if (data.success) {
+        setCategories(data.categories);
 
-    <div className='flex flex-col justify-center items-center w-[100vw] mt-10 mb-20'>
+        // extract subcategories
+        const uniqueSubs = Array.from(
+  new Map(subs.map(item => [item.name, item])).values()
+);
 
-      <h2 className="text-5xl font-semibold text-zinc-800 mb-10">
-        All Products
-      </h2>
+setSubCategories(uniqueSubs);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-      {loading ? (
-
-        <div className='flex justify-center items-center h-[70vh]'>
-          <ClipLoader color='#2563eb' size={50}/>
-        </div>
-
-      ) : (
-
-        <div className='w-[85vw] flex flex-col gap-16'>
-
-          {categories.map((category) => {
-
-            const categoryProducts = products.filter(
-              (product) => product.category?._id === category._id
-            );
-
-            if (categoryProducts.length === 0) return null;
-
-            return (
-
-              <div key={category._id} className='bg-blue-400 flex flex-col items-center justify-center pb-10 rounded-2xl'>
-                   
-                <div className='w-full flex justify-between'>
-                  <h2 className='text-3xl font-semibold text-white mb-6 w-full flex justify-start p-3'>
-                  {category.name}
-                </h2>
-                 <div onClick={()=>navigate(`/category/${category._id}`)} className='bg-white w-20 h-10 rounded-3xl mt-3 mr-3 flex items-center justify-center cursor-pointer'>
-                  <p className='text-2xl'>➜</p>
-                 </div>
-                </div>   
-                
-                <div className='grid grid-cols-5 gap-10 w-[80vw] bg-white px-5 py-5 shadow shadow-zinc-400 rounded-2xl'>
-
-                  {categoryProducts.map((product) => (
-
-                    <div
-                      key={product._id}
-                      className='shadow-md bg-zinc-100 shadow-zinc-400 p-5 w-[200px] hover:scale-105 hover:shadow-lg hover:shadow-zinc-800 transition-all duration-300 cursor-pointer rounded-2xl'
-                      onClick={() => navigate(`/product/${product._id}`)}
-                    >
-
-                      <img src={product.image} width="300" height="100" />
-                       
-                       <div className='bg-white p-2'>
-                        <h2 className='text-sm pb-4 break-words [overflow-wrap:anywhere]  p-2'>
-                        {product.title}
-                      </h2>
-                      <p className='text-xl mt-1 font-bold text-green-500'>
-                        ₹{product.price}
-                      </p>
-                       </div>
-                      
-
-                      {/* <div className='flex items-center gap-2 mt-2'>
-                        <p className='text-lg italic text-zinc-600'>
-                          {product.description.length > 100
-                            ? `${product.description.substring(0, 100)}...`
-                            : product.description}
-                        </p>
-                      </div> */}
-
-                      
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-              </div>
-
-            );
-
-          }).reverse()}
-
-        </div>
-
-      )}
-
-    </div>
-
+  // FILTER LOGIC
+  const filteredProducts = products
+  .filter((p) =>
+    p.title.toLowerCase().includes(filters.title.toLowerCase())
   )
+  .filter((p) => p.price >= filters.minPrice && p.price <= filters.maxPrice)
+  .filter((p) => {
+    if (filters.subCategory.length > 0) {
+      return filters.subCategory.includes(p.subcategory?._id);
+    }
 
-}
+    if (filters.category.length > 0) {
+      return filters.category.includes(p.category?._id);
+    }
 
-export default Product
+    return true;
+  })
+  .sort((a, b) => {
+    if (filters.sort === "priceLow") return a.price - b.price;
+    if (filters.sort === "priceHigh") return b.price - a.price;
+    return 0;
+  });
+
+  return (
+    <div className="flex gap-5 px-5 mt-10 mb-20">
+      
+      {/* SIDEBAR */}
+     <FilterSidebar
+  filters={filters}
+  setFilters={setFilters}
+  categories={categories}
+/>
+
+
+      {/* PRODUCTS */}
+      <div className="flex-1">
+        <h2 className="text-3xl font-semibold mb-6">All Products</h2>
+
+        {loading ? (
+          <div className="flex justify-center items-center h-[70vh]">
+            <ClipLoader color="#2563eb" size={50} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-6">
+            {filteredProducts.length === 0 ? (
+              <p>No products found</p>
+            ) : (
+              filteredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  onClick={() => navigate(`/product/${product._id}`)}
+                  className="bg-white p-4 shadow hover:shadow-lg cursor-pointer rounded-lg transition-all"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="h-40 w-full object-contain mb-3"
+                  />
+
+                  <h3 className="text-sm line-clamp-2 h-[40px]">
+                    {product.title}
+                  </h3>
+
+                  <p className="text-lg font-bold text-green-600 mt-2">
+                    ₹{product.price}
+                  </p>
+
+                  <p className="text-xs text-gray-500">
+                    {product.category?.name}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Product;

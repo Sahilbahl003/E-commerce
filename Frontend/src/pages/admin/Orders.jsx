@@ -1,32 +1,53 @@
 import { useEffect, useState } from "react";
-import {
-  getOrdersService,
-  updateOrderStatusService
-} from "../../services/orders.service";
+import {getMyOrdersService,updateOrderStatusService} from "../../services/order.service";
+import { useNavigate, useLocation } from "react-router-dom";
+import Pagination from "../../components/pagination/Pagination";
 
 const Orders = () => {
 
-  const [orders, setOrders] = useState([]);
+const [orders, setOrders] = useState([]);
+const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
+const navigate = useNavigate();
+const location = useLocation();
 
-    const fetchOrders = async () => {
+const [currentPage, setCurrentPage] = useState(() => {
+  const savedPage = localStorage.getItem("orders_page");
+  return savedPage ? parseInt(savedPage) : 1;
+});
 
-      try {
+  const fetchOrders = async (page) => {
 
-        const data = await getOrdersService();
+  try {
 
-        setOrders(data.orders || []);
+    const data = await getMyOrdersService(page);
 
-      } catch (error) {
-        console.log("Error fetching orders", error);
-      }
+    console.log("Orders API Response:", data);
+    console.log("data orders", data.orders);
+    console.log("data total pages", data.totalPages);
+    console.log("data current pages",data.currentPage)
 
-    };
+    setOrders(data.orders || []);
+    setTotalPages(data.totalPages || 1);
 
-    fetchOrders();
+    setCurrentPage(data.currentPage || page);
+    localStorage.setItem("orders_page", data.currentPage || page);
 
-  }, []);
+  } catch (error) {
+    console.log("Error fetching orders", error);
+  }
+
+};
+
+useEffect(() => {
+
+  localStorage.setItem("orders_page", currentPage);
+
+  navigate(`?page=${currentPage}`, { replace: true });
+
+  fetchOrders(currentPage);
+
+}, [currentPage, navigate]);
 
 
   const updateStatus = async (id, status) => {
@@ -69,6 +90,8 @@ const Orders = () => {
               <th className="p-4">Order ID</th>
               <th className="p-4">User</th>
               <th className="p-4">Total</th>
+              <th className="p-4">Payment Mode</th>
+              <th className="p-4">Payment Status</th>
               <th className="p-4">Status</th>
               <th className="p-4">Update</th>
 
@@ -93,7 +116,7 @@ const Orders = () => {
                 <tr key={order._id} className="border-t">
 
                   <td className="p-4 text-sm">
-                    {order._id.slice(-6)}
+                   {String(order._id).slice(-6)}
                   </td>
 
                   <td className="p-4">
@@ -101,8 +124,14 @@ const Orders = () => {
                   </td>
 
                   <td className="p-4">
-                    ₹{order.totalPrice || 0}
+                    ₹{order.total || 0}
                   </td>
+
+                  <td className="p-4">
+                    {order.paymentMethod}
+                  </td>
+
+                  <td className="p-4">Successful</td>
 
                   <td className="p-4 capitalize">
                     {order.status}
@@ -119,7 +148,7 @@ const Orders = () => {
                     >
 
                       <option value="pending">Pending</option>
-                      <option value="shipped">Shipped</option>
+                      <option value="cancelled">Cancelled</option>
                       <option value="delivered">Delivered</option>
 
                     </select>
@@ -137,6 +166,12 @@ const Orders = () => {
         </table>
 
       </div>
+
+      <Pagination
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={(page) => setCurrentPage(page)}
+      />
 
     </div>
 

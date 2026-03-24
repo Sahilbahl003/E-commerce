@@ -321,7 +321,7 @@ const Register = () => {
           </>
         )}
 
-        <p className="text-sm text-center">
+        <p className="text-sm text-center cursor-pointer">
           Existing User?
           <span
             className="text-blue-500 cursor-pointer ml-1"

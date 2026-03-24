@@ -23,6 +23,7 @@ const apiRequest = async (endpoint, options = {}) => {
   });
 
   const data = await response.json();
+  console.log(response);
 
   if (!response.ok) {
     throw new Error(data.message || "Request failed");

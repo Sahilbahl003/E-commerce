@@ -6,8 +6,9 @@ import {
   getCategoryByIdApi
 } from "../api/categories.api";
 
-export const getCategoriesService = async (page = 1, limit = 5) => {
-  return await getCategoriesApi(page,limit);
+
+export const getCategoriesService = async (page = 1, limit = 5, parentId = null   ) => {
+  return await getCategoriesApi(page, limit, parentId);
 };
 
 export const getCategoryByIdService = async (id) => {
@@ -18,12 +19,9 @@ export const deleteCategoryService = async (id) => {
   return await deleteCategoryApi(id);
 };
 
-
-
 export const createCategoryService = async (formData) => {
   return await createCategoryApi(formData);
-};
-
+}; 
 
 
 export const updateCategoryService = async (id, formData) => {

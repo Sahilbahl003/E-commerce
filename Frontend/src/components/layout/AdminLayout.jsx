@@ -94,7 +94,7 @@ const AdminLayout = () => {
           {!token && (
             <button
               onClick={() => navigate("/login")}
-              className="bg-white text-blue-500 px-4 py-1 rounded"
+              className="bg-white text-blue-500 px-4 py-1 rounded cursor-pointer"
             >
               Login
             </button>
@@ -131,14 +131,14 @@ const AdminLayout = () => {
                       navigate("/admin/profile");
                       setShowMenu(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   >
                     Profile
                   </button>
 
                   <button
                     onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
                   >
                     Logout
                   </button>

@@ -7,3 +7,4 @@ export const getUsersService = async (page = 1, limit = 5) => {
 export const toggleUserStatusService = async (id) => {
   return await toggleUserStatusApi(id);
 };
+
