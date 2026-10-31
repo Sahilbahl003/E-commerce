@@ -1,3 +1,13 @@
-
-node_modules
+# Environment variables
 .env
+.env.*
+!.env.example
+
+# AWS private keys
+*.pem
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log

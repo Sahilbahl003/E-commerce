@@ -25,7 +25,7 @@ import Category from "./components/category/Category";
 import ProductDetail from "./components/product/ProductDetail";
 import Cart from "./pages/user/Cart";
 import Pagination from "./components/pagination/Pagination";
-import CategorySidebar from "./components/layout/CategorySidebar";
+//import CategorySidebar from "./components/layout/CategorySidebar";
 import Wishlist from "./pages/user/Wishlist";
 import SubCategoryForm from "./pages/admin/SubcategoryForm";
 import SubCategories from "./pages/admin/Subcategories";
@@ -51,7 +51,7 @@ return ( <Routes className="overflow-x-hidden">
     <Route path="/category/:id" element={<Category />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/pagi" element={<Pagination/>}/>
-    <Route path="/catSidebar" element={<CategorySidebar/>}/>
+    {/* <Route path="/catSidebar" element={<CategorySidebar/>}/> */}
     <Route path="/wishlist" element={<Wishlist/>}/>
     <Route path="/checkout" element={<Checkout/>} />
     <Route path="/orders" element={<Order/>} />

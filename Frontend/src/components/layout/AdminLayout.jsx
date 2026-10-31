@@ -34,7 +34,7 @@ const AdminLayout = () => {
   }, [location.pathname]);
 
 
-  // 🔥 listen for profile update event
+  // listen for profile update event
   useEffect(() => {
 
     const handleUserUpdate = () => {

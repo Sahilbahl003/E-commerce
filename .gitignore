@@ -1,5 +1,13 @@
-/server/node_modules
-/server/.env
+# Environment variables
+.env
+.env.*
+!.env.example
 
-/Frontend/E-commerce/.env
-/Frontend/E-commerce/node_modules
+# AWS private keys
+*.pem
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log

@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require('path');
 const AuthRoutes = require("./routes/authRoutes");
 const UserRoutes = require("./routes/userRoutes");
 const ProductRoutes = require("./routes/productRoutes");
@@ -14,8 +15,9 @@ const dbConnect = require("./config/dbConnect");
 dotenv.config();
 
 const port = process.env.PORT;
-
+const publicDir = path.join(__dirname,"public");//gives path to public directory which is inside the server folder
 app.use(express.json());
+app.use(express.static(publicDir));//if browser request to acess static files then the express serve it by providing the path to public directory 
 app.use(cors());
 
 app.use("/api/v1",AuthRoutes);
@@ -50,7 +52,14 @@ app.get("/",(req,res)=>{
     res.send(`<h1>Hi is this Ecommerce app</h1>`);
 })
 
+//if any path browser want to aceess which backend is not providing then its serves by wildcard get
+//and it exposes the frontend by giving resoponse of the path to frontend index.html  
+//means koi esi request ka path jo backend pe nahi hai use frontend serve karega
+app.get("*name",(req,res)=>{
+  res.sendFile(path.join(publicDir,"index.html"))
+})
 dbConnect();
+
 
 app.listen(port,()=>{
     console.log(`Hi, this is server started at http://localhost:${port}/`);

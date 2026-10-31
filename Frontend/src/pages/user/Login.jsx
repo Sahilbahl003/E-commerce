@@ -75,10 +75,10 @@ const Login = () => {
 
       } else {
         message.toLowerCase().includes("inactive");
-        setModalMessage(message);
-        setShowModal(true);
+        // setModalMessage(message);
+        // setShowModal(true);
 
-        //toast.error("Hi",message);
+        toast.error(message);
 
         setFormError("Something went wrong");
 

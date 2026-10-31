@@ -13,4 +13,4 @@ router.post("/wishlist/toggle", auth, toggleWishlist);
 
 router.get("/wishlist", auth, getWishlist);
 
-module.exports = router;
+module.exports = router; 

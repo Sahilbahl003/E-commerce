@@ -17,7 +17,7 @@ const Hero = () => {
                     <img src='/images/Hero1.png' width='130px'/>
             </span>
           </div>
-             <div><span className='text-orange-300'>fashion </span>sense.</div>
+             <div><span className='text-orange-300'>fashionio </span>sense.</div>
         </div>
         <div className='ml-30'>
             <p className='text-zinc-500 mt-20  text-xl'>E-comzy is the best place for you to find your fashion <br/>clothes with reasonable price and trust</p>

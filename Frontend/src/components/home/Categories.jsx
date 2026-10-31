@@ -46,7 +46,7 @@ const Categories = () => {
                 <div key={cat._id}>
 
                 <div onClick={()=>navigate(`/category/${cat._id}`)}
-                  className='w-36 h-60 flex flex-col justify-start pt-5 rounded-[70px] items-center bg-amber-50 shadow-2xl hover:scale-105 transition duration-500'
+                  className='w-36 h-60 flex flex-col justify-start pt-5 rounded-[70px] items-center bg-amber-50 shadow-2xl hover:scale-105 transition duration-500 cursor-pointer'
                 >
 
                     <img
