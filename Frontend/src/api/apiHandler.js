@@ -1,4 +1,4 @@
-const API = import.meta.env.VITE_API_URL;
+const API = "";
 
 const apiRequest = async (endpoint, options = {}) => {
   const { method = "GET", body, headers = {}, url } = options;
