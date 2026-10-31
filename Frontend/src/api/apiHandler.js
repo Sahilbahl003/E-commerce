@@ -1,4 +1,4 @@
-const API = "";
+const API = "/api/v1";
 
 const apiRequest = async (endpoint, options = {}) => {
   const { method = "GET", body, headers = {}, url } = options;
