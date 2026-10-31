@@ -18,7 +18,7 @@ RUN npm run build
 
 
 # Stage 2: Setup Node.js backend
-FROM node:22-alpine
+FROM node:22-alpine AS backend
 
 WORKDIR /app
 
