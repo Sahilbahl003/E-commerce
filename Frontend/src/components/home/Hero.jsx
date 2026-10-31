@@ -11,7 +11,7 @@ const Hero = () => {
 
           <div className='flex'>
             <div className=' mt-10'>
-                You can feel  
+                You can feely 
             </div>
             <span className='pl-10'>
                     <img src='/images/Hero1.png' width='130px'/>
